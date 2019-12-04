@@ -9,6 +9,7 @@ inputs = []
 with open('input.txt', 'r') as fh:
     for l in fh:
         inputs.append(l.strip().split(','))
+
 directions = {'R':(operator.add, 0),
               'L':(operator.sub, 0),
               'U':(operator.add, 1),
@@ -29,12 +30,12 @@ for (n,i) in enumerate(inputs):
             point[index] = op(point[index], 1)
             points[n].append(tuple(point))
             if tuple(point) not in dists[n]:
-                dists[n][tuple(point)] = 
+                dists[n][tuple(point)] = total
             steps -= 1
 # print(points[0])
 # print(points[1])
 intersections = set(points[0]).intersection(points[1])
 # print(intersections)
-dists = [d for d in [abs(x - 100000) + abs(y - 100000) for (x,y) in intersections] if d]
+dists = [d for d in [dists[0][point] + dists[1][point] for point in intersections if point in dists[0]] if d]
 dists.sort()
 print(dists)
