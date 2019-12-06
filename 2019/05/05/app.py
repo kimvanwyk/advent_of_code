@@ -1,13 +1,13 @@
 import operator
 
-# inputs = [[1,9,10,3,2,3,11,0,99,30,40,50],
-#           [1,0,0,0,99],
-#           [2,3,0,3,99],
-#           [2,4,4,5,99,0],
-#           [1,1,1,4,99,5,6,0,99]]
+inputs = [1]
 
-inputs = [2]
-instructions = [3,0,4,0,99]
+# instructions = ['1002','4','3','4','33','99']
+# instructions = ['1101','100','-1','4','0']
+instructions = []
+with open('input.txt', 'r') as fh:
+    for l in fh:
+        instructions.append(l.strip().split(','))
 
 ops = {1: operator.add,
        2: operator.mul}
@@ -15,24 +15,51 @@ ops = {1: operator.add,
 lengths = {1: 3,
            2: 3,
            3: 1,
-           4: 1}
+           4: 1,
+           99:1}
+
+def get_modes(op):
+    s = str(op)
+    code = int(s[-2:])
+    modes = [int(c) for c in s[:-2][::-1]]
+    if len(modes) < lengths[code]:
+        modes.extend([0] * (lengths[code] - len(modes)))
+    if code in ops:
+        modes[-1] = 1
+    return (code, modes)
+
+def get_params(instructions, params, modes):
+    out = []
+    for (p,m) in zip(params, modes):
+        print(p,m)
+        if m == 0:
+            out.append(int(instructions[int(p)]))
+        if m == 1:
+            out.append(int(p))
+    return out
 
 def process(instructions, inputs=[]):
     n = 0
     out = []
     while True:
-        op = instructions[n]
-        if op == 99:
+        (code,modes) = get_modes(instructions[n])
+        if code == 99:
             break
-        if op in ops:
-            instructions[instructions[n+lengths[op]]] = ops[instructions[n]](instructions[instructions[n+1]], instructions[instructions[n+2]])
-        if op == 3:
-            instructions[instructions[n+1]] = inputs.pop(0)
-        if op == 4:
-            out.append(instructions[instructions[n+1]])
-        n += lengths[op] + 1
+        params = get_params(instructions, instructions[n+1:n+lengths[code]+1], modes)
+        print(code)
+        print(modes)
+        print(params)
+        if code in ops:
+            instructions[params[2]] = ops[code](params[0], params[1])
+        if code == 3:
+            instructions[params[0]] = inputs.pop(0)
+        if code == 4:
+            out.append(instructions[params[0]])
+        n += lengths[code] + 1
         
     return (out, instructions)
+
+# print(get_modes(1002))
 
 (out, instructions) = process(instructions, inputs)
 print(instructions)
