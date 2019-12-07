@@ -1,4 +1,9 @@
-inputs = ['B)C','C)D','D)E','COM)B','E)F','B)G','G)H','D)I','E)J','J)K','K)L']
+# inputs = ['B)C','C)D','D)E','COM)B','E)F','B)G','G)H','D)I','E)J','J)K','K)L']
+
+inputs = []
+with open('input.txt', 'r') as fh:
+    for l in fh:
+        inputs.append(l.strip())
 
 in_to_out = {}
 out_to_in = {}
@@ -21,8 +26,8 @@ for leaf in leaves:
         node = out_to_in[node]
         mapping[-1].append(node)
     mapping[-1].reverse()
-for m in mapping:
-    print(m)
+# for m in mapping:
+#     print(m)
 
 paths = {}
 for m in mapping:
