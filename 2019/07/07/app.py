@@ -1,3 +1,4 @@
+import itertools
 import operator
 
 inputs = [0]
@@ -8,13 +9,14 @@ inputs = [0]
 # instructions = ['3','23','3','24','1002','24','10','24','1002','23','-1','23','101','5','23','23','1','24','23','23','4','23','99','0','0']
 # phases = [0,1,2,3,4]
 
-instructions = ['3','31','3','32','1002','32','10','32','1001','31','-2','31','1007','31','0','33','1002','33','7','33','1','33','31','31','1','32','31','31','4','31','99','0','0','0']
-phases = [1,0,4,3,2]
+# instructions = ['3','31','3','32','1002','32','10','32','1001','31','-2','31','1007','31','0','33','1002','33','7','33','1','33','31','31','1','32','31','31','4','31','99','0','0','0']
+# phases = [1,0,4,3,2]
 
-# instructions = []
-# with open('input.txt', 'r') as fh:
-#     for l in fh:
-#         instructions.extend(l.strip().split(','))
+instructions = []
+with open('input.txt', 'r') as fh:
+    for l in fh:
+        instructions.extend(l.strip().split(','))
+phases = [0,1,2,3,4]
 
 ops = {1: operator.add,
        2: operator.mul}
@@ -92,9 +94,15 @@ def process(instructions, inputs=[]):
 
     return (out, instructions)
 
-orig = instructions[:]
-out = [0]
-for phase in phases:
-    inputs = [phase, out[0]]
-    (out, instructions) = process(instructions, inputs)
-    print(out)
+# print([l for l in itertools.permutations(phases)])
+
+vals = []
+for phases in [l for l in itertools.permutations(phases)]:
+    orig = instructions[:]
+    out = [0]
+    for phase in phases:
+        inputs = [phase, out[0]]
+        (out, instructions) = process(instructions, inputs)
+        vals.append(out[0])
+vals.sort(reverse=True)
+print(vals)
