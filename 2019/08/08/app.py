@@ -4,8 +4,7 @@ HEIGHT = 6
 # HEIGHT = 2
 LAYER_TOTAL = WIDTH * HEIGHT
 
-# inputs = '123456789012'
-# inputs = '001123123452789012'
+# inputs = '012120201010'
 with open('input.txt', 'r') as fh:
     inputs = fh.read().strip()
 
@@ -15,15 +14,23 @@ for (n,p) in enumerate(inputs):
         layers.append([])
     layers[-1].append(int(p))
 
-zeroes = None
-for (n,layer) in enumerate(layers):
-    num = len([z for z in layer if z == 0])
-    if (zeroes is None) or (num < zeroes):
-        zeroes = num
-        lowest = n
-print('lowest:', lowest, 'zeroes:', zeroes)
-print(layers[lowest])
-digits = []
-for d in (1,2):
-    digits.append(len([i for i in layers[lowest] if i == d]))
-print(digits[0] * digits[1])
+print(layers)
+image = []
+for n in range(LAYER_TOTAL):
+    image.append(2)
+    for layer in layers:
+        if layer[n] < image[n]:
+            image[n] = layer[n]
+            break
+print(image)
+
+colours = {0: 'black', 1: 'white', 2: 'red'}
+n = 0
+with open('out.html', 'w') as fh:
+    fh.write("<html><body>\n<table border='1'><tr>\n")
+    for (n,p) in enumerate(image):
+        if not n % WIDTH:
+            fh.write('</tr><tr>')
+        fh.write((f"<td width='10px' height='10px' bgcolor='{colours[p]}'></td>"))
+    fh.write('</tr></table></body></html>')
+    
