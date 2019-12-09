@@ -17,7 +17,7 @@ from time import sleep
 # inputs = []
 # instructions = ['3','52','1001','52','-5','52','3','53','1','52','56','54','1007','54','5','55','1005','55','26','1001','54','-5','54','1105','1','12','1','53','54','53','1008','54','0','55','1001','55','1','55','2','53','55','53','4','53','1001','56','-1','56','1005','56','6','99','0','0','0','0','10']
 
-inputs = [1]
+inputs = [2]
 instructions = []
 with open('input.txt', 'r') as fh:
     for l in fh:
@@ -67,13 +67,11 @@ class Intcode(threading.Thread):
 
     def set_params(self, positions, modes):
         out = []
-        print('in params: p:', positions, 'm:', modes)
         last_different = False
         if (self.code in ops) or (self.code in comp) or (self.code in (3,)):
             last_different = True
         for (n,(pos,m)) in enumerate(zip(positions, modes),1):
             p = int(self.instructions[int(pos)])
-            print(f"getting param for pos {pos}: {p}")
             if m == 2:
                 p = self.relative_base + p
             if m == 1:
