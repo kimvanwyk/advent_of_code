@@ -1,5 +1,5 @@
 from collections import defaultdict
-FIN = "1.txt"
+FIN = "2.txt"
 
 asteroids = []
 with open(FIN) as fh:
@@ -7,6 +7,19 @@ with open(FIN) as fh:
         asteroids.append([])
         for i in l.strip():
             asteroids[-1].append(i)
+
+colours = {'#': 'black', '.': 'yellow', 'S': 'red'}
+n = 0
+with open('out.html', 'w') as fh:
+    fh.write("<html><body>\n<table border='1'><tr>\n")
+    for (y,row) in enumerate(asteroids):
+        fh.write('<tr>')
+        for (x,cell) in enumerate(row):
+            if (x,y) == (5,8):
+                cell = 'S'
+            fh.write((f"<td width='20px' height='20px' bgcolor='{colours[cell]}'></td>"))
+        fh.write('</tr>')
+    fh.write('</table></body></html>')
 
 for a in asteroids:
     print(' '.join(a))
@@ -31,10 +44,22 @@ for y in range(my + 1):
 # edges.sort()
 # print('edges:', edges)
 
+d = [(0,-1.0)]
+for dx in (-1,1):
+    m = -0.9
+    while m < 1.0:
+        m += 0.1
+        d.append((dx,m))
+d.append((0,1.0))
+
 def get_num_hits(x,y,debug=False):
     num_hits = 0
     hits = []
-    for (ex,ey) in edges:
+    # for (ex,ey) in edges:
+    for (dx,d) in d:
+        for m in dy:
+            if abs(m) == 1:
+                dx = 0
         if ex == x:
             m = 1
             dx = 0
@@ -60,17 +85,20 @@ def get_num_hits(x,y,debug=False):
         while True:
             sx += dx
             sy += m
-            if not ((sx >= 0) and (sx <= mx) and (sy >= 0) and (sy <= my)):
-                break
             diff = abs(int(sy) - sy)
             iy = int(round(sy))
             if diff > 0.9:
                 diff = 1 - diff
-            print('sx:', sx, 'sy:', sy, diff)
+            if debug:
+                print('sx:', sx, 'sy:', sy, 'diff:', diff, 'iy:', iy)
+            if not ((sx >= 0) and (sx <= mx) and (iy >= 0) and (iy <= my)):
+                break
             if (diff < 0.0001):
-                print('hits:', hits, 'sx:', sx, 'sy:', sy)
+                if debug:
+                    print('hits:', hits, 'sx:', sx, 'sy:', sy)
                 if (asteroids[iy][sx] == '#') and ((sx,iy) not in hits):
-                    print('hit, x', sx, 'y', iy)
+                    if debug:
+                        print('hit, x', sx, 'y', iy)
                     points.append((sx, iy))
                     num_hits += 1
                     hits.append((sx,iy))
@@ -102,11 +130,11 @@ def get_num_hits(x,y,debug=False):
     return(num_hits)
 
 hits = defaultdict(list)
-for x in range(mx+1):
-    for y in range(my+1):
-        if asteroids[y][x] == '#':
-            hits[get_num_hits(x,y)].append((x,y))
-# hits[get_num_hits(0,2,True)].append((0,2))
+# for x in range(mx+1):
+#     for y in range(my+1):
+#         if asteroids[y][x] == '#':
+#             hits[get_num_hits(x,y)].append((x,y))
+hits[get_num_hits(5,8,True)].append((5,8))
 keys = list(hits.keys())
 keys.sort(reverse=True)
 for k in keys:
