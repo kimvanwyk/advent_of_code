@@ -33,15 +33,21 @@ def check_password_line_part_1(line):
 
 def check_password_line_part_2(line):
     g = parse_password_line(line)
-    return int(g["min"]) <= g["password"].count(g["char"]) <= int(g["max"])
+    return (g["password"][int(g["pos1"]) - 1] == g["char"]) ^ (
+        g["password"][int(g["pos2"]) - 1] == g["char"]
+    )
 
 
 # Part 1: check = check_password_line_part_1
-check = check_password_line_part_1
+# Part 2: check = check_password_line_part_2
+check = check_password_line_part_2
 
 matches = 0
 for (n, line) in enumerate(input_data):
-    if check(line):
+    c = check(line)
+    if DEBUG:
+        print(n, c)
+    if c:
         matches += 1
 
 print(matches)
