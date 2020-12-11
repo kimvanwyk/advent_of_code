@@ -1,5 +1,6 @@
 import common
 import itertools
+import math
 
 import pyperclip
 
@@ -10,10 +11,11 @@ if TEST:
 else:
     input_data = common.input_data
 
-if 1:
-    # Part 1
-    for (first, second) in itertools.combinations(input_data, 2):
-        if first + second == 2020:
-            print(first, second, first * second)
-            pyperclip.copy(first * second)
-            break
+# Part 1: split = 2
+split = 2
+
+for t in itertools.combinations(input_data, split):
+    if sum(t) == 2020:
+        print(t, math.prod(t))
+        pyperclip.copy(math.prod(t))
+        break
