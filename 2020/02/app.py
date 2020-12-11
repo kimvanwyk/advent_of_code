@@ -10,7 +10,7 @@ TEST = 0
 DEBUG = 0
 test_data = (line for line in ("1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"))
 
-PATTERN = re.compile("(?P<min>\d+)-(?P<max>\d+) (?P<char>.): (?P<password>.*)")
+PATTERN = re.compile("(?P<pos1>\d+)-(?P<pos2>\d+) (?P<char>.): (?P<password>.*)")
 
 if TEST:
     input_data = test_data
@@ -28,12 +28,20 @@ def parse_password_line(line):
 
 def check_password_line_part_1(line):
     g = parse_password_line(line)
+    return int(g["pos1"]) <= g["password"].count(g["char"]) <= int(g["pos2"])
+
+
+def check_password_line_part_2(line):
+    g = parse_password_line(line)
     return int(g["min"]) <= g["password"].count(g["char"]) <= int(g["max"])
 
 
+# Part 1: check = check_password_line_part_1
+check = check_password_line_part_1
+
 matches = 0
 for (n, line) in enumerate(input_data):
-    if check_password_line_part_1(line):
+    if check(line):
         matches += 1
 
 print(matches)
