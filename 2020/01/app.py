@@ -1,15 +1,19 @@
-import common
 import itertools
 import math
+import sys
 
 import pyperclip
 
+sys.path.insert(0, "../")
+import common
+
 TEST = 0
+test_data = [1721, 979, 366, 299, 675, 1456]
 
 if TEST:
-    input_data = common.test_data
+    input_data = test_data
 else:
-    input_data = common.input_data
+    input_data = common.read_integer_file("input.txt")
 
 # Part 1: split = 2; total = 2020
 # Part 1: split = 3; total = 2020
