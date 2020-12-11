@@ -11,7 +11,7 @@ TEST = 0
 test_data = [1721, 979, 366, 299, 675, 1456]
 
 if TEST:
-    input_data = test_data
+    input_data = (i for i in test_data)
 else:
     input_data = common.read_integer_file("input.txt")
 
