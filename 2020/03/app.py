@@ -6,7 +6,7 @@ import pyperclip
 sys.path.insert(0, "../")
 import common
 
-TEST = 0
+TEST = 1
 DEBUG = 0
 
 if TEST:
@@ -24,9 +24,14 @@ class InputData:
     x = attr.ib(default=0)
 
     def parse_input_data(self):
+        n = 0
         for line in self.input_data:
             if self.edge is None:
                 self.edge = len(line)
+            n += 1
+            if n < self.y_amt:
+                continue
+            n = 0
             yield [idx for (idx, val) in enumerate(line) if val == "#"]
 
     def advance(self):
