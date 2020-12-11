@@ -18,17 +18,22 @@ else:
     input_data = common.read_string_file("input.txt")
 
 
-def check_password_line(line):
+def parse_password_line(line):
     m = re.search(PATTERN, line)
     g = m.groupdict()
     if DEBUG:
         print(g)
+    return g
+
+
+def check_password_line_part_1(line):
+    g = parse_password_line(line)
     return int(g["min"]) <= g["password"].count(g["char"]) <= int(g["max"])
 
 
 matches = 0
 for (n, line) in enumerate(input_data):
-    if check_password_line(line):
+    if check_password_line_part_1(line):
         matches += 1
 
 print(matches)
