@@ -6,8 +6,8 @@ import pyperclip
 sys.path.insert(0, "../")
 import common
 
-TEST = 1
-DEBUG = 1
+TEST = 0
+DEBUG = 0
 
 if TEST:
     input_data = common.read_string_file("test_data.txt")
