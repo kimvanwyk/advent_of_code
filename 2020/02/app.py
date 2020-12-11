@@ -6,8 +6,8 @@ import pyperclip
 sys.path.insert(0, "../")
 import common
 
-TEST = 1
-DEBUG = 1
+TEST = 0
+DEBUG = 0
 test_data = (line for line in ("1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"))
 
 PATTERN = re.compile("(?P<min>\d+)-(?P<max>\d+) (?P<char>.): (?P<password>.*)")
@@ -15,7 +15,7 @@ PATTERN = re.compile("(?P<min>\d+)-(?P<max>\d+) (?P<char>.): (?P<password>.*)")
 if TEST:
     input_data = test_data
 else:
-    input_data = common.read_integer_file("input.txt")
+    input_data = common.read_string_file("input.txt")
 
 
 def check_password_line(line):
@@ -27,7 +27,7 @@ def check_password_line(line):
 
 
 matches = 0
-for line in input_data:
+for (n, line) in enumerate(input_data):
     if check_password_line(line):
         matches += 1
 
