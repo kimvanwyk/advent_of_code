@@ -26,5 +26,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     settings.settings.test = args.data == "test"
+    settings.settings.debug = args.debug
 
     run_day_part(args.day, args.part)
