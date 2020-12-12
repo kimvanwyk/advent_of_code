@@ -1,8 +1,15 @@
+import importlib
+
 import settings
-import day01
 
-settings.settings.test = True
-settings.settings.input_file = "day01_input.txt"
+settings.settings.test = False
 
-day01.part_1()
-day01.part_2()
+
+def run_day_part(day, part):
+    settings.settings.set_day(day)
+    day_mod = importlib.import_module(f"day{day:02}")
+    getattr(day_mod, f"part_{part}")()
+
+
+run_day_part(1, 1)
+run_day_part(1, 2)
