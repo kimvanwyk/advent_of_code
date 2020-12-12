@@ -2,13 +2,9 @@ import math
 import sys
 
 import attr
-import pyperclip
 
-sys.path.insert(0, "../")
 import common
-
-TEST = 0
-DEBUG = 0
+import settings
 
 
 @attr.s
@@ -43,24 +39,25 @@ class InputData:
             yield (self.x in row)
 
 
-# Part 1: (x,y) = ((3,1),)
-# Part 2: (x,y) = ((1,1), (3,1), (5,1), (7,1), (1,2))
-directions = ((1, 1), (3, 1), (5, 1), (7, 1), (1, 2))
+def process(directions):
+    hits = []
+    for (x, y) in directions:
+        input_data = common.read_string_file()
+        i = InputData(input_data=input_data, x_amt=x, y_amt=y)
+        dir_hits = 0
+        for (row, hit) in enumerate(i.is_tree_in_row()):
+            if settings.settings.debug:
+                print(row, hit, i.x)
+            if hit:
+                dir_hits += 1
+        hits.append(dir_hits)
+    result = math.prod(hits)
+    return result
 
-hits = []
-for (x, y) in directions:
-    if TEST:
-        input_data = common.read_string_file("test_data.txt")
-    else:
-        input_data = common.read_string_file("input.txt")
-    i = InputData(input_data=input_data, x_amt=x, y_amt=y)
-    dir_hits = 0
-    for (row, hit) in enumerate(i.is_tree_in_row()):
-        if DEBUG:
-            print(row, hit, i.x)
-        if hit:
-            dir_hits += 1
-    hits.append(dir_hits)
-result = math.prod(hits)
-print(result)
-pyperclip.copy(result)
+
+def part_1():
+    return process(((3, 1),))
+
+
+def part_2():
+    return process(((1, 1), (3, 1), (5, 1), (7, 1), (1, 2)))
