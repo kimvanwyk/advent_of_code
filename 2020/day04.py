@@ -1,7 +1,5 @@
 import pprint
 
-import attr
-
 import common
 import settings
 

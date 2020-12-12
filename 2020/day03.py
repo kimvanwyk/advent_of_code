@@ -41,8 +41,8 @@ class InputData:
 
 def process(directions):
     hits = []
-    for (x, y) in directions:
         input_data = common.read_string_file()
+    for (x, y) in directions:
         i = InputData(input_data=input_data, x_amt=x, y_amt=y)
         dir_hits = 0
         for (row, hit) in enumerate(i.is_tree_in_row()):
