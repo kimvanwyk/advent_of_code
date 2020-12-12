@@ -58,6 +58,9 @@ def check_passport_part2(passport, height_ranges={"cm": (150, 193), "in": (59, 7
         ):
             return False
 
+        if passport["ecl"] not in "amb blu brn gry grn hzl oth".split(" "):
+            return False
+
         return True
     except Exception as e:
         if settings.settings.debug:
