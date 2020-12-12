@@ -32,11 +32,12 @@ def process():
         sids.append(sid)
         if settings.settings.debug:
             print(row, col, sid)
-    return max(sids)
+    return sids
 
 
 def part_1():
-    return process()
+    sids = process()
+    return max(sids)
 
 
 def part_2():
