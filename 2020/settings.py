@@ -16,7 +16,7 @@ class Settings:
         self.part = int(part)
 
         # Trwith part, exclude part from fn if no match found
-        fn = f"day{self.day:02}_{'test_' if self.test else ''}_part{part}_input.txt"
+        fn = f"day{self.day:02}_{'test_' if self.test else ''}input_part{part}.txt"
         if fn not in os.listdir():
             fn = f"day{self.day:02}_{'test_' if self.test else ''}input.txt"
         self.input_file = fn
