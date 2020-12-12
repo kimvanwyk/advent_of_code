@@ -41,4 +41,10 @@ def part_1():
 
 
 def part_2():
-    return process()
+    sids = process()
+    sids.sort()
+    for i in range(1, len(sids)):
+        if sids[i] - sids[i - 1] > 1:
+            print(i, sids[i - 1], sids[i], sids[i] - 1)
+            return sids[i] - 1
+    return ""
