@@ -3,25 +3,16 @@ import sys
 
 import pyperclip
 
-sys.path.insert(0, "../")
 import common
-
-TEST = 0
-DEBUG = 0
-test_data = (line for line in ("1-3 a: abcde", "1-3 b: cdefg", "2-9 c: ccccccccc"))
+import settings
 
 PATTERN = re.compile("(?P<pos1>\d+)-(?P<pos2>\d+) (?P<char>.): (?P<password>.*)")
-
-if TEST:
-    input_data = test_data
-else:
-    input_data = common.read_string_file("input.txt")
 
 
 def parse_password_line(line):
     m = re.search(PATTERN, line)
     g = m.groupdict()
-    if DEBUG:
+    if settings.settings.debug:
         print(g)
     return g
 
@@ -38,16 +29,22 @@ def check_password_line_part_2(line):
     )
 
 
-# Part 1: check = check_password_line_part_1
-# Part 2: check = check_password_line_part_2
-check = check_password_line_part_2
+def process(check):
 
-matches = 0
-for (n, line) in enumerate(input_data):
-    c = check(line)
-    if DEBUG:
-        print(n, c)
-    if c:
-        matches += 1
+    matches = 0
+    input_data = common.read_string_file()
+    for (n, line) in enumerate(input_data):
+        c = check(line)
+        if settings.settings.debug:
+            print(n, c)
+        if c:
+            matches += 1
+    return matches
 
-print(matches)
+
+def part_1():
+    return process(check_password_line_part_1)
+
+
+def part_2():
+    return process(check_password_line_part_2)

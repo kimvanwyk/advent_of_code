@@ -5,7 +5,6 @@ import sys
 import pyperclip
 
 import common
-import settings
 
 
 def process(split, total):
@@ -13,13 +12,12 @@ def process(split, total):
     for t in itertools.combinations(input_data, split):
         if sum(t) == total:
             print(t, math.prod(t))
-            pyperclip.copy(math.prod(t))
-            break
+            return math.prod(t)
 
 
 def part_1():
-    process(2, 2020)
+    return process(2, 2020)
 
 
 def part_2():
-    process(3, 2020)
+    return process(3, 2020)
