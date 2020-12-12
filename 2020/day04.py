@@ -24,27 +24,25 @@ def parse_lines():
     return passports
 
 
-def process():
+def check_passport_part1(passport):
+    return all(
+        [c in passport for c in ("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")]
+    )
+
+
+def process(check):
     passports = parse_lines()
     if settings.settings.debug:
         pprint.pprint(passports)
-    return passports
+    valids = 0
+    for passport in passports:
+        if check(passport):
+            valids += 1
+    return valids
 
 
 def part_1():
-    passports = process()
-    return sum(
-        [
-            1
-            for passport in passports
-            if all(
-                [
-                    c in passport
-                    for c in ("byr", "iyr", "eyr", "hgt", "hcl", "ecl", "pid")
-                ]
-            )
-        ]
-    )
+    return process(check_passport_part1)
 
 
 def part_2():
