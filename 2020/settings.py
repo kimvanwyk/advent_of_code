@@ -1,0 +1,3 @@
+TEST = 1
+DEBUG = 0
+INPUT_FILE = None
