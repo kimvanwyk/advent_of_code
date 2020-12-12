@@ -22,12 +22,12 @@ if __name__ == "__main__":
     )
     parser.add_argument("part", type=int, choices=(1, 2), help="The part to execute")
     parser.add_argument(
-        "data", choices=("test", "prod"), help="Whether to run with test or prod data"
+        "data", choices=("t", "p"), help="Whether to run with test (t) or prod (p) data"
     )
     parser.add_argument("--debug", action="store_true", help="Whether to include debug")
     args = parser.parse_args()
 
-    settings.settings.test = args.data == "test"
+    settings.settings.test = args.data == "t"
     settings.settings.debug = args.debug
 
     result = run_day_part(args.day, args.part)
