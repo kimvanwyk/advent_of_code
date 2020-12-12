@@ -1,7 +1,7 @@
 import common
 import settings
 
-
+# inspiration from https://stackoverflow.com/a/752330
 def reduce_range(steps, initial_size, left, right):
     r = list(range(0, initial_size))
     for step in steps:
