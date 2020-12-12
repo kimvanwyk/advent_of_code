@@ -8,7 +8,7 @@ settings.settings.test = False
 
 
 def run_day_part(day, part):
-    settings.settings.set_day(day)
+    settings.settings.set_day_and_part(day, part)
     day_mod = importlib.import_module(f"day{day:02}")
     return getattr(day_mod, f"part_{part}")()
 
