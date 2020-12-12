@@ -30,14 +30,31 @@ def check_passport_part1(passport):
     )
 
 
+def check_passport_part2(passport):
+    try:
+        for (k, low, high) in (
+            ("byr", 1920, 2002),
+            ("iyr", 2010, 2020),
+            ("eyr", 2020, 2030),
+        ):
+            if not low <= int(passport[k]) <= high:
+                return False
+
+        return True
+    except Exception as e:
+        return False
+
+
 def process(check):
     passports = parse_lines()
-    if settings.settings.debug:
-        pprint.pprint(passports)
     valids = 0
     for passport in passports:
-        if check(passport):
+        result = check(passport)
+        if result:
             valids += 1
+        if settings.settings.debug:
+            pprint.pprint(passport)
+            print(result)
     return valids
 
 
@@ -46,4 +63,4 @@ def part_1():
 
 
 def part_2():
-    return process()
+    return process(check_passport_part2)
