@@ -1,5 +1,7 @@
 import importlib
 
+import pyperclip
+
 import settings
 
 settings.settings.test = False
@@ -8,7 +10,7 @@ settings.settings.test = False
 def run_day_part(day, part):
     settings.settings.set_day(day)
     day_mod = importlib.import_module(f"day{day:02}")
-    getattr(day_mod, f"part_{part}")()
+    return getattr(day_mod, f"part_{part}")()
 
 
 if __name__ == "__main__":
@@ -28,4 +30,6 @@ if __name__ == "__main__":
     settings.settings.test = args.data == "test"
     settings.settings.debug = args.debug
 
-    run_day_part(args.day, args.part)
+    result = run_day_part(args.day, args.part)
+    print(result)
+    pyperclip.copy(result)
