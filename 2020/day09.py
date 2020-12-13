@@ -4,12 +4,11 @@ import common
 import settings
 
 
-def process(window_size=25):
+def part_1(window_size=25):
     if settings.settings.test:
         window_size = 5
     input_data = [n for n in common.read_integer_file()]
     for n in range(window_size, len(input_data)):
-        print(n)
         found = False
         for (a, b) in combinations(input_data[n - window_size : n], 2):
             if settings.settings.debug:
@@ -30,9 +29,6 @@ def process(window_size=25):
     return "Not found"
 
 
-def part_1():
-    return process()
-
-
 def part_2():
+    target = part_1()
     return process()
