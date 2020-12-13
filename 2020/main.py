@@ -7,8 +7,8 @@ import settings
 settings.settings.test = False
 
 
-def run_day_part(day, part):
-    settings.settings.set_day_and_part(day, part)
+def run_day_part(day, part, test_part=None):
+    settings.settings.set_day_and_part(day, part, test_part)
     day_mod = importlib.import_module(f"day{day:02}")
     return getattr(day_mod, f"part_{part}")()
 
@@ -37,9 +37,6 @@ if __name__ == "__main__":
     settings.settings.test = args.data == "t"
     settings.settings.debug = args.d
 
-    part = args.part
-    if args.p:
-        part = args.p
-    result = run_day_part(args.day, part)
+    result = run_day_part(args.day, args.part, args.p)
     print(result)
     pyperclip.copy(result)
