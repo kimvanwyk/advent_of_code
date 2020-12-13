@@ -22,8 +22,8 @@ class Console:
         op = operator.add if amt[0] == "+" else operator.sub
         return (op, int(amt[1:]))
 
-    def modify_instruction(self, instruction):
-        return instruction
+    def modify_instruction(self, instruction_number):
+        return self.instructions[instruction_number]
 
     def process(self):
         n = 0
@@ -36,7 +36,7 @@ class Console:
                 break
             inst = self.instructions[n]
             self.executed_instructions.append(n)
-            inst = self.modify_instruction(inst)
+            inst = self.modify_instruction(n)
             if "nop" in inst:
                 n += 1
             elif "acc" in inst:
@@ -64,10 +64,16 @@ def part_1():
 
 
 def part_2():
-    def modify_inst(instruction):
-        for (orig, new) in (("jmp", "nop"), ("nop", "jmp")):
-            if orig in instruction:
-                return instruction.replace(orig, new)
-        return instruction
+    class ModifyingConsole(Console):
+        def __init__(self):
+            self.tried = []
+
+        def modify_instruction(self, instruction_number):
+            instruction = self.instructions[instruction_number]
+            if instruction_number not in self.tried:
+                for (orig, new) in (("jmp", "nop"), ("nop", "jmp")):
+                    if orig in instruction:
+                        return instruction.replace(orig, new)
+            return instruction
 
     return process()
