@@ -25,11 +25,21 @@ if __name__ == "__main__":
         "data", choices=("t", "p"), help="Whether to run with test (t) or prod (p) data"
     )
     parser.add_argument("-d", action="store_true", help="Whether to include debug")
+    parser.add_argument(
+        "-p",
+        choices=(1, 2),
+        default=None,
+        type=int,
+        help="If test data is in parts, which part to use. Will override part setting",
+    )
     args = parser.parse_args()
 
     settings.settings.test = args.data == "t"
-    settings.settings.debug = args.debug
+    settings.settings.debug = args.d
 
-    result = run_day_part(args.day, args.part)
+    part = args.part
+    if args.p:
+        part = args.p
+    result = run_day_part(args.day, part)
     print(result)
     pyperclip.copy(result)
