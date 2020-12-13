@@ -48,15 +48,15 @@ class Console:
                 n = op(n, amt)
 
 
-def process():
+def process(console_cls=Console):
     input_data = common.read_string_file()
-    console = Console([l for l in input_data])
-    console.process()
+    console = console_cls([l for l in input_data])
     return console
 
 
 def part_1():
     console = process()
+    console.process()
     if settings.settings.debug:
         print(console.executed_instructions)
         print(console.accumulator)
@@ -67,13 +67,32 @@ def part_2():
     class ModifyingConsole(Console):
         def __init__(self):
             self.tried = []
+            self.possible_subs = len(
+                [i for i in self.instructions if "nop" in i or "jmp" in i]
+            )
 
         def modify_instruction(self, instruction_number):
             instruction = self.instructions[instruction_number]
             if instruction_number not in self.tried:
                 for (orig, new) in (("jmp", "nop"), ("nop", "jmp")):
                     if orig in instruction:
+                        if settings.settings.debug:
+                            print(
+                                f"Replacing {orig} with {new} for instruction '{instruction}' (number {instruction_number})"
+                            )
                         return instruction.replace(orig, new)
             return instruction
+
+        def process_with_replacement(self):
+            tries = 0
+            while tries <= self.possible_subs:
+                if settings.settings.debug:
+                    print(f"Try number {tries}")
+                self.process()
+                if self.reason == EXIT_REASON_JUMP_PAST_END:
+                    break
+                tries += 1
+
+    console = process(ModifyingConsole)
 
     return process()
