@@ -24,7 +24,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "data", choices=("t", "p"), help="Whether to run with test (t) or prod (p) data"
     )
-    parser.add_argument("--debug", action="store_true", help="Whether to include debug")
+    parser.add_argument("-d", action="store_true", help="Whether to include debug")
     args = parser.parse_args()
 
     settings.settings.test = args.data == "t"
