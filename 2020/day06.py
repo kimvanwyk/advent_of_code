@@ -35,4 +35,10 @@ def part_1():
 
 
 def part_2():
-    return process()
+    groups = process()
+    lens = [len([k for (k, v) in d.items() if v == num]) for (d, num) in groups]
+    if settings.settings.debug:
+        pprint.pprint(groups)
+        print(lens)
+        print(sum(lens))
+    return sum(lens)
