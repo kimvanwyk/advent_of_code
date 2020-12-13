@@ -27,6 +27,9 @@ class Console:
 
     def process(self):
         n = 0
+        self.reason = None
+        self.executed_instructions = []
+        self.accumulator = 0
         while True:
             if n in self.executed_instructions:
                 self.reason = EXIT_REASON_REPEAT
@@ -65,15 +68,11 @@ def part_1():
 
 def part_2():
     class ModifyingConsole(Console):
-        def __init__(self):
-            self.tried = []
-            self.possible_subs = len(
-                [i for i in self.instructions if "nop" in i or "jmp" in i]
-            )
-
         def modify_instruction(self, instruction_number):
             instruction = self.instructions[instruction_number]
-            if instruction_number not in self.tried:
+            if (instruction_number not in self.options_tried) and not (self.tried):
+                self.tried = True
+                self.options_tried.append(instruction_number)
                 for (orig, new) in (("jmp", "nop"), ("nop", "jmp")):
                     if orig in instruction:
                         if settings.settings.debug:
@@ -84,15 +83,29 @@ def part_2():
             return instruction
 
         def process_with_replacement(self):
+            self.options_tried = []
+            self.possible_subs = len(
+                [i for i in self.instructions if "nop" in i or "jmp" in i]
+            )
+            if settings.settings.debug:
+                print(f"Possible substitutions: {self.possible_subs}")
             tries = 0
             while tries <= self.possible_subs:
+                self.tried = False
                 if settings.settings.debug:
                     print(f"Try number {tries}")
                 self.process()
+                if settings.settings.debug:
+                    print(f"Exit reason: {self.reason}")
+                    print(self.executed_instructions)
+
                 if self.reason == EXIT_REASON_JUMP_PAST_END:
                     break
                 tries += 1
 
     console = process(ModifyingConsole)
-
-    return process()
+    console.process_with_replacement()
+    if settings.settings.debug:
+        print(console.reason)
+        print(console.accumulator)
+    return console.accumulator
