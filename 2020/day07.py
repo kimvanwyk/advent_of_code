@@ -1,6 +1,7 @@
 from collections import defaultdict
 from pprint import pprint
 
+import attr
 
 import common
 import settings
@@ -30,6 +31,31 @@ def process():
     return (bags_top_down, bags_bottom_up)
 
 
+@attr.s
+class Nodes:
+    bag_dict = attr.ib()
+    nodes = attr.ib(default=attr.Factory(dict))
+
+    def add_node(self, bag):
+        if bag not in self.nodes:
+            if self.bag_dict[bag] is None:
+                self.nodes[bag] = None
+            else:
+                self.nodes[bag] = []
+                for (k, v) in self.bag_dict[bag].items():
+                    for n in range(v):
+                        self.add_node(k)
+                        if self.nodes[k]:
+                            self.nodes[bag].append(k)
+                            self.nodes[bag].extend(self.nodes[k])
+                            if settings.settings.debug:
+                                print(f"{bag}: extend {self.nodes[k]}")
+                        else:
+                            self.nodes[bag].append(k)
+                            if settings.settings.debug:
+                                print(f"{bag}: append {k}")
+
+
 # recursion refresher via https://stackoverflow.com/questions/8991840/recursion-using-yield
 def part_1(own_bag="shiny gold"):
     options = []
@@ -53,5 +79,9 @@ def part_1(own_bag="shiny gold"):
     return len(s)
 
 
-def part_2():
-    return process()
+def part_2(own_bag="shiny gold"):
+    (bags_top_down, bags_bottom_up) = process()
+    nodes = Nodes(bags_top_down)
+    nodes.add_node(own_bag)
+    print(len(nodes.nodes[own_bag]))
+    return len(nodes.nodes[own_bag])
