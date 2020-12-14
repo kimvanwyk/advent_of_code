@@ -5,13 +5,14 @@ import sys
 import pyperclip
 
 import common
+from common import debug
 
 
 def process(split, total):
     input_data = common.read_integer_file()
     for t in itertools.combinations(input_data, split):
         if sum(t) == total:
-            print(t, math.prod(t))
+            debug((t, math.prod(t)))
             return math.prod(t)
 
 
