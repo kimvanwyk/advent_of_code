@@ -4,6 +4,7 @@ import sys
 import attr
 
 import common
+from common import debug
 import settings
 
 
@@ -41,13 +42,12 @@ class InputData:
 
 def process(directions):
     hits = []
-        input_data = common.read_string_file()
+    input_data = common.read_string_file()
     for (x, y) in directions:
         i = InputData(input_data=input_data, x_amt=x, y_amt=y)
         dir_hits = 0
         for (row, hit) in enumerate(i.is_tree_in_row()):
-            if settings.settings.debug:
-                print(row, hit, i.x)
+            debug((row, hit, i.x))
             if hit:
                 dir_hits += 1
         hits.append(dir_hits)

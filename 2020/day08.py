@@ -3,6 +3,7 @@ import operator
 import attr
 
 import common
+from common import debug
 import settings
 
 
@@ -60,9 +61,8 @@ def process(console_cls=Console):
 def part_1():
     console = process()
     console.process()
-    if settings.settings.debug:
-        print(console.executed_instructions)
-        print(console.accumulator)
+    debug(console.executed_instructions)
+    debug(console.accumulator)
     return console.accumulator
 
 
@@ -75,10 +75,9 @@ def part_2():
                 self.options_tried.append(instruction_number)
                 for (orig, new) in (("jmp", "nop"), ("nop", "jmp")):
                     if orig in instruction:
-                        if settings.settings.debug:
-                            print(
-                                f"Replacing {orig} with {new} for instruction '{instruction}' (number {instruction_number})"
-                            )
+                        debug(
+                            f"Replacing {orig} with {new} for instruction '{instruction}' (number {instruction_number})"
+                        )
                         return instruction.replace(orig, new)
             return instruction
 
@@ -87,17 +86,14 @@ def part_2():
             self.possible_subs = len(
                 [i for i in self.instructions if "nop" in i or "jmp" in i]
             )
-            if settings.settings.debug:
-                print(f"Possible substitutions: {self.possible_subs}")
+            debug(f"Possible substitutions: {self.possible_subs}")
             tries = 0
             while tries <= self.possible_subs:
                 self.tried = False
-                if settings.settings.debug:
-                    print(f"Try number {tries}")
+                debug(f"Try number {tries}")
                 self.process()
-                if settings.settings.debug:
-                    print(f"Exit reason: {self.reason}")
-                    print(self.executed_instructions)
+                debug(f"Exit reason: {self.reason}")
+                debug(self.executed_instructions)
 
                 if self.reason == EXIT_REASON_JUMP_PAST_END:
                     break
@@ -105,7 +101,6 @@ def part_2():
 
     console = process(ModifyingConsole)
     console.process_with_replacement()
-    if settings.settings.debug:
-        print(console.reason)
-        print(console.accumulator)
+    debug(console.reason)
+    debug(console.accumulator)
     return console.accumulator

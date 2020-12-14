@@ -1,6 +1,7 @@
 from itertools import combinations
 
 import common
+from common import debug
 import settings
 
 
@@ -54,10 +55,9 @@ def part_2():
     if found:
         result = min(nums) + max(nums)
 
-        if settings.settings.debug:
-            print(start)
-            print(nums)
-            print(result)
+        debug(start)
+        debug(nums)
+        debug(result)
     else:
         result = "Not found"
     return result

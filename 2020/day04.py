@@ -1,6 +1,7 @@
 import pprint
 
 import common
+from common import debug
 import settings
 
 
@@ -65,8 +66,7 @@ def check_passport_part2(passport, height_ranges={"cm": (150, 193), "in": (59, 7
 
         return True
     except Exception as e:
-        if settings.settings.debug:
-            print(e)
+        debug(e)
         return False
 
 
@@ -78,8 +78,8 @@ def process(check):
         if result:
             valids += 1
         if settings.settings.debug:
-            pprint.pprint(passport)
-            print(result)
+            debug(passport, pretty=True)
+            debug(result)
     return valids
 
 

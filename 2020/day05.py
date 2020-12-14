@@ -1,4 +1,5 @@
 import common
+from common import debug
 import settings
 
 # inspiration from https://stackoverflow.com/a/752330
@@ -30,8 +31,7 @@ def process():
         col = find_col(l[7:])
         sid = (row * 8) + col
         sids.append(sid)
-        if settings.settings.debug:
-            print(row, col, sid)
+        debug((row, col, sid))
     return sids
 
 

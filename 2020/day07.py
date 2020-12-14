@@ -4,6 +4,7 @@ from pprint import pprint
 import attr
 
 import common
+from common import debug
 import settings
 
 
@@ -24,9 +25,8 @@ def process():
                 d[desc] = int(num.strip())
                 bags_bottom_up[desc].append(bag)
             bags_top_down[bag] = d
-    if settings.settings.debug:
-        pprint(bags_top_down)
-        pprint(bags_bottom_up)
+    debug(bags_top_down, pretty=True)
+    debug(bags_bottom_up, pretty=True)
 
     return (bags_top_down, bags_bottom_up)
 
@@ -48,12 +48,10 @@ class Nodes:
                         if self.nodes[k]:
                             self.nodes[bag].append(k)
                             self.nodes[bag].extend(self.nodes[k])
-                            if settings.settings.debug:
-                                print(f"{bag}: extend {self.nodes[k]}")
+                            debug(f"{bag}: extend {self.nodes[k]}")
                         else:
                             self.nodes[bag].append(k)
-                            if settings.settings.debug:
-                                print(f"{bag}: append {k}")
+                            debug(f"{bag}: append {k}")
 
 
 # recursion refresher via https://stackoverflow.com/questions/8991840/recursion-using-yield
@@ -72,10 +70,9 @@ def part_1(own_bag="shiny gold"):
 
     recurse_bags(own_bag)
     s = set(options)
-    if settings.settings.debug:
-        print(options)
-        print(s)
-        print(len(s))
+    debug(options)
+    debug(s)
+    debug(len(s))
     return len(s)
 
 

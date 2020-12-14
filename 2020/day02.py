@@ -4,6 +4,7 @@ import sys
 import pyperclip
 
 import common
+from common import debug
 import settings
 
 PATTERN = re.compile("(?P<pos1>\d+)-(?P<pos2>\d+) (?P<char>.): (?P<password>.*)")
@@ -12,8 +13,7 @@ PATTERN = re.compile("(?P<pos1>\d+)-(?P<pos2>\d+) (?P<char>.): (?P<password>.*)"
 def parse_password_line(line):
     m = re.search(PATTERN, line)
     g = m.groupdict()
-    if settings.settings.debug:
-        print(g)
+    debug(g)
     return g
 
 
@@ -35,8 +35,7 @@ def process(check):
     input_data = common.read_string_file()
     for (n, line) in enumerate(input_data):
         c = check(line)
-        if settings.settings.debug:
-            print(n, c)
+        debug((n, c))
         if c:
             matches += 1
     return matches

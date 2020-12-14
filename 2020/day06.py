@@ -2,6 +2,7 @@ from collections import defaultdict
 import pprint
 
 import common
+from common import debug
 import settings
 
 
@@ -27,18 +28,16 @@ def process():
 def part_1():
     groups = process()
     lens = [len(d.keys()) for (d, num) in groups]
-    if settings.settings.debug:
-        pprint.pprint(groups)
-        print(lens)
-        print(sum(lens))
+    debug(groups, pretty=True)
+    debug(lens)
+    debug(sum(lens))
     return sum(lens)
 
 
 def part_2():
     groups = process()
     lens = [len([k for (k, v) in d.items() if v == num]) for (d, num) in groups]
-    if settings.settings.debug:
-        pprint.pprint(groups)
-        print(lens)
-        print(sum(lens))
+    debug(groups, pretty=True)
+    debug(lens)
+    debug(sum(lens))
     return sum(lens)
