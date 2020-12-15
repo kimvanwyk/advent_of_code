@@ -62,25 +62,18 @@ class Grid:
         return types
 
     def apply_occupation_rules(self):
-        top = self.grid[0][:]
-        self.new_grid = [top]
-        self.changed = False
+        self.changes = []
         for row in range(1, len(self.grid) - 1):
-            self.new_grid.append(["."])
             for col in range(1, len(self.grid[0]) - 1):
                 self.set_current_idx(row, col)
                 if self.current_val == "L" and (self.adjacent.get("#", 0) == 0):
-                    self.new_grid[-1].append("#")
-                    self.changed = True
+                    self.changes.append((row, col, "#"))
                 elif self.current_val == "#" and (self.adjacent.get("#", 0) >= 4):
-                    self.new_grid[-1].append("L")
-                    self.changed = True
-                else:
-                    self.new_grid[-1].append(self.current_val)
-            self.new_grid[-1].append(".")
-        self.new_grid.append(top)
+                    self.changes.append((row, col, "L"))
 
-        self.grid = self.new_grid
+        self.changed = bool(self.changes)
+        for (row, col, val) in self.changes:
+            self.grid[row][col] = val
 
     def apply_occupation_rules_until_stable(self):
         self.changed = True
@@ -92,12 +85,12 @@ def process():
     grid = Grid()
     input_data = common.read_string_file()
     grid.make_grid(input_data)
-    grid.show_grid()
+    debug(grid.show_grid())
     grid.apply_occupation_rules_until_stable()
-    print()
+    debug("")
     grid.show_grid()
     counts = grid.count_types()
-    print(counts)
+    debug(counts)
     return counts["#"]
 
 
