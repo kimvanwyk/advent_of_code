@@ -15,6 +15,7 @@ class Grid:
     current_val = attr.ib(default=None)
     adjacent = attr.ib(default=None)
     changed = attr.ib(default=None)
+    empty_seat_threshold = attr.ib(default=4)
 
     def make_grid(self, input_data):
         self.grid = []
@@ -68,7 +69,9 @@ class Grid:
                 self.set_current_idx(row, col)
                 if self.current_val == "L" and (self.adjacent.get("#", 0) == 0):
                     self.changes.append((row, col, "#"))
-                elif self.current_val == "#" and (self.adjacent.get("#", 0) >= 4):
+                elif self.current_val == "#" and (
+                    self.adjacent.get("#", 0) >= self.empty_seat_threshold
+                ):
                     self.changes.append((row, col, "L"))
 
         self.changed = bool(self.changes)
