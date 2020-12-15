@@ -14,6 +14,7 @@ class Grid:
     current_idx = attr.ib(default=(1, 1))
     current_val = attr.ib(default=None)
     adjacent = attr.ib(default=None)
+    changed = attr.ib(default=None)
 
     def make_grid(self, input_data):
         self.grid = []
@@ -56,20 +57,17 @@ class Grid:
     def apply_occupation_rules(self):
         top = self.grid[0][:]
         self.new_grid = [top]
+        self.changed = False
         for row in range(1, len(self.grid) - 1):
             self.new_grid.append(["."])
             for col in range(1, len(self.grid[0]) - 1):
                 self.set_current_idx(row, col)
-                # print(
-                #     self.current_val,
-                #     self.adjacent,
-                # )
                 if self.current_val == "L" and (self.adjacent.get("#", 0) == 0):
-                    # print(f"update [{row}][{col}] from L to #")
                     self.new_grid[-1].append("#")
+                    self.changed = True
                 elif self.current_val == "#" and (self.adjacent.get("#", 0) >= 4):
-                    # print(f"update [{row}][{col}] from # to L")
                     self.new_grid[-1].append("L")
+                    self.changed = True
                 else:
                     self.new_grid[-1].append(self.current_val)
             self.new_grid[-1].append(".")
@@ -77,17 +75,18 @@ class Grid:
 
         self.grid = self.new_grid
 
+    def apply_occupation_rules_until_stable(self):
+        self.changed = True
+        while self.changed:
+            self.apply_occupation_rules()
+
 
 def process():
     grid = Grid()
     input_data = common.read_string_file()
     grid.make_grid(input_data)
     grid.show_grid()
-    print()
-    grid.apply_occupation_rules()
-    grid.show_grid()
-    print()
-    grid.apply_occupation_rules()
+    grid.apply_occupation_rules_until_stable()
     grid.show_grid()
     return ""
 
