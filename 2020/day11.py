@@ -54,6 +54,13 @@ class Grid:
             (cx, cy) = self.current_idx
             self.adjacent[self.grid[cx + row][cy + col]] += 1
 
+    def count_types(self):
+        types = defaultdict(int)
+        for row in range(1, len(self.grid) - 1):
+            for col in range(1, len(self.grid[0]) - 1):
+                types[self.grid[row][col]] += 1
+        return types
+
     def apply_occupation_rules(self):
         top = self.grid[0][:]
         self.new_grid = [top]
@@ -87,8 +94,11 @@ def process():
     grid.make_grid(input_data)
     grid.show_grid()
     grid.apply_occupation_rules_until_stable()
+    print()
     grid.show_grid()
-    return ""
+    counts = grid.count_types()
+    print(counts)
+    return counts["#"]
 
 
 def part_1():
