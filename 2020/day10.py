@@ -27,7 +27,7 @@ def part_1():
     return counter[1] * counter[3]
 
 # heavily taken from https://dev.to/qviper/advent-of-code-2020-python-solution-day-10-30kd
-# learned some dnamic programming here
+# learned some dynamic programming here
 def part_2():
     adapters = process()
     total = 0
