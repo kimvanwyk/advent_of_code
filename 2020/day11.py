@@ -123,4 +123,5 @@ def part_1():
 
 
 def part_2():
-    return process()
+    grid = Grid(empty_seat_threshold=5, nearby_chair_func="get_line_of_sight")
+    return process(grid)
