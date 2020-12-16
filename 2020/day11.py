@@ -52,6 +52,21 @@ class Grid:
             adjacent[self.grid.get((x + row, y + col), "B")] += 1
         return adjacent
 
+    def get_line_of_sight(self, x, y):
+        adjacent = defaultdict(int)
+        for (row, col) in (
+            (-1, -1),
+            (-1, 0),
+            (-1, 1),
+            (0, -1),
+            (0, 1),
+            (1, -1),
+            (1, 0),
+            (1, 1),
+        ):
+            adjacent[self.grid.get((x + row, y + col), "B")] += 1
+        return adjacent
+
     def count_types(self):
         types = defaultdict(int)
         for (row, col, val) in self.loop_grid():
@@ -61,7 +76,8 @@ class Grid:
     def apply_occupation_rules(self):
         self.changes = []
         for (row, col, val) in self.loop_grid():
-            adj = self.get_adjacent(row, col)
+            if val != ".":
+                adj = self.get_adjacent(row, col)
             if val == "L" and (adj.get("#", 0) == 0):
                 self.changes.append((row, col, "#"))
             elif val == "#" and (adj.get("#", 0) >= self.empty_seat_threshold):
