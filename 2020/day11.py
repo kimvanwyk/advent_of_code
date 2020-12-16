@@ -17,6 +17,7 @@ class Grid:
     width = attr.ib(default=0)
     height = attr.ib(default=0)
     empty_seat_threshold = attr.ib(default=4)
+    nearby_chair_func = attr.ib(default="get_adjacent")
 
     def make_grid(self, input_data):
         self.grid = {}
@@ -64,7 +65,17 @@ class Grid:
             (1, 0),
             (1, 1),
         ):
-            adjacent[self.grid.get((x + row, y + col), "B")] += 1
+            next_x = x + row
+            next_y = y + col
+            while True:
+                val = self.grid.get((next_x, next_y), None)
+                if val is None:
+                    break
+                if val in ("#", "L"):
+                    adjacent[val] += 1
+                    break
+                next_x += row
+                next_y += col
         return adjacent
 
     def count_types(self):
@@ -75,9 +86,10 @@ class Grid:
 
     def apply_occupation_rules(self):
         self.changes = []
+        nearby_chair_func = getattr(self, self.nearby_chair_func)
         for (row, col, val) in self.loop_grid():
             if val != ".":
-                adj = self.get_adjacent(row, col)
+                adj = nearby_chair_func(row, col)
             if val == "L" and (adj.get("#", 0) == 0):
                 self.changes.append((row, col, "#"))
             elif val == "#" and (adj.get("#", 0) >= self.empty_seat_threshold):
