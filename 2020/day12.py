@@ -58,7 +58,15 @@ def process_waypoint_instructions(instructions, waypoint=[10, 1]):
         if action in degrees:
             (d, mult) = directions[degrees[action]]
             waypoint[d] += mult * steps
+        if action in ("L", "R"):
+            wpx = waypoint[0]
+            wpy = waypoint[1]
+            for s in range(((360 - steps) if action == "L" else steps) // 90):
+                (wpx, wpy) = (wpy, -1 * wpx)
+            waypoint = [wpx, wpy]
+
         debug((action, steps, location, waypoint))
+    return location
 
 
 def process():
@@ -76,8 +84,7 @@ def part_1():
 
 def part_2():
     instructions = process()
-    process_waypoint_instructions(instructions)
-    # dist = abs(x) + abs(y)
-    # debug((x, y, dist))
-    # return dist
-    return ""
+    (x, y) = process_waypoint_instructions(instructions)
+    dist = abs(x) + abs(y)
+    debug((x, y, dist))
+    return dist
