@@ -105,8 +105,7 @@ class Grid:
             self.apply_occupation_rules()
 
 
-def part_1():
-    grid = Grid()
+def process(grid):
     input_data = common.read_string_file()
     grid.make_grid(input_data)
     debug(grid.show_grid())
@@ -116,6 +115,11 @@ def part_1():
     counts = grid.count_types()
     debug(counts)
     return counts["#"]
+
+
+def part_1():
+    grid = Grid(empty_seat_threshold=4, nearby_chair_func="get_adjacent")
+    return process(grid)
 
 
 def part_2():
