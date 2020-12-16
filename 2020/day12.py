@@ -31,17 +31,34 @@ def process_instructions(instructions, facing=90):
             (d, mult) = directions[degrees[action]]
             location[d] += mult * steps
         if action in ("L", "R"):
-            mult = 1 if action == "R" else -1
-            facing += mult * steps
-            if facing < 0:
-                facing += 360
+            if action == "L":
+                steps = 360 - steps
+            facing += steps
             if facing >= 360:
                 facing -= 360
     return location
 
 
-def process_waypoint_instructions(instructions, waypoint=(10, 1)):
-    pass
+def process_waypoint_instructions(instructions, waypoint=[10, 1]):
+    location = [0, 0]
+    # in format (waypoint index, multiplier)
+    directions = {
+        0: (1, 1),
+        90: (0, 1),
+        180: (1, -1),
+        270: (0, -1),
+    }
+    degrees = {"N": 0, "E": 90, "S": 180, "W": 270}
+    for instruction in instructions:
+        (action, steps) = parse_instruction(instruction)
+        if action == "F":
+            direction = [w * steps for w in waypoint]
+            for (n, (l, d)) in enumerate(zip(location, direction)):
+                location[n] = l + d
+        if action in degrees:
+            (d, mult) = directions[degrees[action]]
+            waypoint[d] += mult * steps
+        debug((action, steps, location, waypoint))
 
 
 def process():
@@ -58,4 +75,9 @@ def part_1():
 
 
 def part_2():
-    return process()
+    instructions = process()
+    process_waypoint_instructions(instructions)
+    # dist = abs(x) + abs(y)
+    # debug((x, y, dist))
+    # return dist
+    return ""
