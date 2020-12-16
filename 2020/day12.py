@@ -3,6 +3,13 @@ from common import debug
 import settings
 
 
+def parse_instruction(instruction):
+    action = instruction[0]
+    steps = int(instruction[1:])
+    debug((instruction, action, steps))
+    return (action, steps)
+
+
 def process_instructions(instructions, facing=90):
     location = [0, 0]
 
@@ -15,9 +22,7 @@ def process_instructions(instructions, facing=90):
     }
     degrees = {"N": 0, "E": 90, "S": 180, "W": 270}
     for instruction in instructions:
-        action = instruction[0]
-        steps = int(instruction[1:])
-        debug((instruction, action, steps))
+        (action, steps) = parse_instruction(instruction)
 
         if action == "F":
             (d, mult) = directions[facing]
@@ -33,6 +38,10 @@ def process_instructions(instructions, facing=90):
             if facing >= 360:
                 facing -= 360
     return location
+
+
+def process_waypoint_instructions(instructions, waypoint=(10, 1)):
+    pass
 
 
 def process():
