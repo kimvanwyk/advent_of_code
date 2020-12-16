@@ -105,7 +105,7 @@ class Grid:
             self.apply_occupation_rules()
 
 
-def process():
+def part_1():
     grid = Grid()
     input_data = common.read_string_file()
     grid.make_grid(input_data)
@@ -116,10 +116,6 @@ def process():
     counts = grid.count_types()
     debug(counts)
     return counts["#"]
-
-
-def part_1():
-    return process()
 
 
 def part_2():
