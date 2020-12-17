@@ -15,6 +15,29 @@ def process():
     return (timestamp, bus_times)
 
 
+def find_time_pattern(starting_value=0):
+    results = []
+    (timestamp, bus_times) = process()
+    for (num, bus_time) in enumerate(bus_times, 0):
+        timestamp = (starting_value // bus_time[0]) * bus_time[0]
+        cont = True
+        print(num, bus_time, starting_value, timestamp)
+        while cont:
+            for (idx, bus) in enumerate(bus_time[1:], 1):
+                if bus:
+                    if (timestamp + idx) % bus:
+                        timestamp += bus_time[0]
+                        break
+            else:
+                cont = False
+            if cont:
+                continue
+            results.append(timestamp)
+            debug((num, timestamp))
+            cont = False
+    return results
+
+
 def part_1():
     (timestamp, bus_times) = process()
     floor = timestamp - 1
@@ -27,4 +50,9 @@ def part_1():
 
 
 def part_2():
-    return process()
+    if not settings.settings.test:
+        starting_value = 100000000000000 - 1
+    else:
+        starting_value = 2000
+    results = find_time_pattern(starting_value)
+    return results[0]
