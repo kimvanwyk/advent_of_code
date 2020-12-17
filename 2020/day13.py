@@ -28,16 +28,6 @@ def find_time_pattern(starting_value=0):
                 timestamp += bus_time[0]
                 continue
             break
-            # for (idx, bus) in enumerate(bus_time[1:], 1):
-            #     if bus:
-            #         if (timestamp + idx) % bus:
-
-            #             timestamp += bus_time[0]
-            #             break
-            # else:
-            #     cont = False
-            # if cont:
-            #     continue
         results.append(timestamp)
         debug((num, timestamp))
     return results
