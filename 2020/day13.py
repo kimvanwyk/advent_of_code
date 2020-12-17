@@ -15,21 +15,22 @@ def process():
     return (timestamp, bus_times)
 
 
+# Sought help from https://www.reddit.com/r/adventofcode/comments/kc4njx/2020_day_13_solutions/gfok4yk/
+# Learned about Chinese Remainder Theorem
+# Also hadn't noticed the bus values of interest were all primes
 def find_time_pattern(starting_value=0):
     results = []
     (timestamp, bus_times) = process()
     for (num, bus_time) in enumerate(bus_times, 0):
-        inputs = [(bus, idx) for (idx, bus) in enumerate(bus_time) if bus]
-        inputs.sort(reverse=True)
-        timestamp = ((starting_value // inputs[0][0]) * inputs[0][0]) - (inputs[0][1])
-        print(num, inputs, starting_value, timestamp)
-        while True:
-            if any((timestamp + idx) % bus for (bus, idx) in inputs):
-                timestamp += inputs[0][0]
-                continue
-            break
+        diffs = {bus: -idx % bus for (idx, bus) in enumerate(bus_time) if bus}
+        divisors = list(reversed(sorted(diffs)))
+        timestamp = diffs[divisors[0]]
+        product = divisors[0]
+        for divisor in divisors[1:]:
+            while (timestamp % divisor) != diffs[divisor]:
+                timestamp += product
+            product *= divisor
         results.append(timestamp)
-        debug((num, timestamp))
     return results
 
 
@@ -50,4 +51,5 @@ def part_2():
     else:
         starting_value = 2000
     results = find_time_pattern(starting_value)
+    debug(results)
     return results[0]
