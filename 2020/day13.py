@@ -19,13 +19,13 @@ def find_time_pattern(starting_value=0):
     results = []
     (timestamp, bus_times) = process()
     for (num, bus_time) in enumerate(bus_times, 0):
-        timestamp = (starting_value // bus_time[0]) * bus_time[0]
-        print(num, bus_time, starting_value, timestamp)
-        inputs = [(bus, idx) for (idx, bus) in enumerate(bus_time[1:], 1) if bus]
+        inputs = [(bus, idx) for (idx, bus) in enumerate(bus_time) if bus]
         inputs.sort(reverse=True)
+        timestamp = ((starting_value // inputs[0][0]) * inputs[0][0]) - (inputs[0][1])
+        print(num, inputs, starting_value, timestamp)
         while True:
             if any((timestamp + idx) % bus for (bus, idx) in inputs):
-                timestamp += bus_time[0]
+                timestamp += inputs[0][0]
                 continue
             break
         results.append(timestamp)
