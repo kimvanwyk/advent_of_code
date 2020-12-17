@@ -18,7 +18,7 @@ def process():
 # Sought help from https://www.reddit.com/r/adventofcode/comments/kc4njx/2020_day_13_solutions/gfok4yk/
 # Learned about Chinese Remainder Theorem
 # Also hadn't noticed the bus values of interest were all primes
-def find_time_pattern(starting_value=0):
+def find_time_pattern():
     results = []
     (timestamp, bus_times) = process()
     for (num, bus_time) in enumerate(bus_times, 0):
@@ -46,10 +46,6 @@ def part_1():
 
 
 def part_2():
-    if not settings.settings.test:
-        starting_value = 100000000000000 - 1
-    else:
-        starting_value = 2000
-    results = find_time_pattern(starting_value)
+    results = find_time_pattern()
     debug(results)
     return results[0]
