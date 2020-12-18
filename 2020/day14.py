@@ -32,6 +32,27 @@ class Mask:
         return bt_util.ba2int(bt)
 
 
+class FloatingMask:
+    def apply(self, mask, val):
+        masks = [bt_util.int2ba(val, length=36, endian="big")]
+        debug(f"Input:  {masks[-1]} ({bt_util.ba2int(masks[-1])})")
+        for (n, c) in enumerate(mask):
+            if c == "1":
+                for m in masks:
+                    m[n] = True
+            if c == "X":
+                new = []
+                for m in masks:
+                    new.append(m[:])
+                    new[-1][n] = True
+                    m[n] = False
+                masks.extend(new)
+        if settings.settings.debug:
+            for (n, m) in enumerate(masks):
+                print(f"Output {n}: {m} ({bt_util.ba2int(m)})")
+        return [bt_util.ba2int(bt) for bt in masks]
+
+
 def process():
     input_data = common.read_string_file()
     return input_data
@@ -53,4 +74,17 @@ def part_1():
 
 
 def part_2():
-    return process()
+    mask = FloatingMask()
+    memory = {}
+    for line in process():
+        if "mask" in line:
+            mask_pattern = line.split("=")[-1].strip()
+        elif "mem" in line:
+            (m, data) = line.split("=")
+            val = int(data)
+            address = int(m.split("[")[-1].split("]")[0])
+            addresses = mask.apply(mask_pattern, int(address))
+            for add in addresses:
+                memory[add] = val
+                debug(f"Setting address {add} to {val}")
+    return sum(memory.values())
