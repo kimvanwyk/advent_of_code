@@ -42,4 +42,5 @@ def part_1():
 
 
 def part_2():
-    return process()
+    results = find_last_num(30000000)
+    return results[0]
