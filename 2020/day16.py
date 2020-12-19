@@ -18,10 +18,12 @@ FIELD_RE = re.compile(
 @attr.s
 class InputData:
     fields = attr.ib(default=None)
+    ranges = attr.ib(default=None)
     own = attr.ib(default=None)
 
     def parse(self):
         self.fields = {}
+        self.ranges = []
         self.input_data = common.read_string_file()
         patterns = True
         for line in self.input_data:
@@ -29,10 +31,12 @@ class InputData:
                 m = FIELD_RE.match(line)
                 if m:
                     d = m.groupdict()
-                    self.fields[d["field"]] = (
-                        (int(d["min1"]), int(d["max1"])),
-                        (int(d["min2"]), int(d["max2"])),
+                    ranges = (
+                        range(int(d["min1"]), int(d["max1"]) + 1),
+                        range(int(d["min2"]), int(d["max2"]) + 1),
                     )
+                    self.fields[d["field"]] = ranges
+                    self.ranges.extend(ranges)
                 else:
                     break
         for line in self.input_data:
@@ -58,9 +62,16 @@ def process():
     input_data.parse()
     debug(f"fields: {input_data.fields}")
     debug(f"own: {input_data.own}")
+    invalid_vals = []
     for other in input_data.yield_others():
+        for val in other:
+            if not any(val in r for r in input_data.ranges):
+                invalid_vals.append(val)
+                debug(f"Invalid val: {val}")
+                break
         debug(f"other: {other}")
-    return ""
+    debug(f"Invalid vals: {invalid_vals}")
+    return sum(invalid_vals)
 
 
 def part_1():
