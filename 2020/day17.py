@@ -1,6 +1,10 @@
+from collections import namedtuple
+
 import common
 from common import debug
 import settings
+
+Point = namedtuple("Point", ("x", "y", "z"))
 
 
 class Points:
@@ -9,14 +13,14 @@ class Points:
         self.points = {}
         for (y, line) in enumerate(input_data, 1):
             for (x, val) in enumerate(f".{line}."):
-                self.points[(x, y, 0)] = val == "#"
-                self.points[(x, y, -1)] = False
-                self.points[(x, y, 1)] = False
+                self.points[Point(x, y, 0)] = val == "#"
+                self.points[Point(x, y, -1)] = False
+                self.points[Point(x, y, 1)] = False
         # Add start and end lines in all z's
         for z in (-1, 0, 1):
             for x in range(len(line) + 2):
-                self.points[x, 0, z] = False
-                self.points[x, y + 1, z] = False
+                self.points[Point(x, 0, z)] = False
+                self.points[Point(x, y + 1, z)] = False
         self.mins = {"x": 0, "y": 0, "z": -1}
         self.maxs = {"x": len(line) + 1, "y": y + 1, "z": 1}
 
@@ -30,9 +34,9 @@ class Points:
                 print("".join(out))
             print()
 
-
-# def apply_rules(points):
-#     for point in points:
+    # def apply_rules(self):
+    #     for (k,v) in self.points:
+    #         active_neighbours = sum(
 
 
 def part_1():
