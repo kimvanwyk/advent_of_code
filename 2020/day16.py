@@ -1,3 +1,5 @@
+from math import prod
+from pprint import pprint
 import re
 
 import attr
@@ -53,7 +55,6 @@ class InputData:
             if not line:
                 break
             other = [int(c.strip()) for c in line.split(",")]
-            other.sort()
             yield other
 
 
@@ -64,6 +65,7 @@ def part_1():
     debug(f"own: {input_data.own}")
     invalid_vals = []
     for other in input_data.yield_others():
+        other.sort()
         for val in other:
             if not any(val in r for r in input_data.ranges):
                 invalid_vals.append(val)
@@ -84,4 +86,29 @@ def part_2():
         if all(any(val in r for r in input_data.ranges) for val in other):
             others.append(other)
     debug(f"others: {others}")
-    return ""
+    ordering = {}
+    singles = []
+    for (field, (range1, range2)) in input_data.fields.items():
+        indices = set(
+            [n for (n, i) in enumerate(input_data.own) if (i in range1 or i in range2)]
+        )
+        for other in others:
+            indices &= set(
+                [n for (n, i) in enumerate(other) if (i in range1 or i in range2)]
+            )
+        ordering[field] = indices
+        if len(indices) == 1:
+            singles.append(indices)
+    while not all(len(i) == 1 for i in ordering.values()):
+        for (field, indices) in ordering.items():
+            if len(indices) > 1:
+                for single in singles:
+                    ordering[field] -= single
+            if len(indices) == 1:
+                singles.append(indices)
+    results = {}
+    for (field, index) in ordering.items():
+        results[field] = input_data.own[list(index)[0]]
+    print(results)
+    result = prod([v for (k, v) in results.items() if "departure" in k], start=1)
+    return result
