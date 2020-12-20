@@ -57,7 +57,7 @@ class InputData:
             yield other
 
 
-def process():
+def part_1():
     input_data = InputData()
     input_data.parse()
     debug(f"fields: {input_data.fields}")
@@ -74,9 +74,14 @@ def process():
     return sum(invalid_vals)
 
 
-def part_1():
-    return process()
-
-
 def part_2():
-    return process()
+    input_data = InputData()
+    input_data.parse()
+    debug(f"fields: {input_data.fields}")
+    debug(f"own: {input_data.own}")
+    others = []
+    for other in input_data.yield_others():
+        if all(any(val in r for r in input_data.ranges) for val in other):
+            others.append(other)
+    debug(f"others: {others}")
+    return ""
