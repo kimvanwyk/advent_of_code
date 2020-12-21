@@ -33,14 +33,43 @@ class Points:
                     out.append("#" if self.points.get((x, y, z), False) else ".")
                 print("".join(out))
             print()
+        print("-----------------------------------------------------------------")
 
-    # def apply_rules(self):
-    #     for (k,v) in self.points:
-    #         active_neighbours = sum(
+    def loop_negihbours(self, k):
+        for x in (k.x - 1, k.x, k.x + 1):
+            for y in (k.y - 1, k.y, k.y + 1):
+                for z in (k.z - 1, k.z, k.z + 1):
+                    yield (Point(x, y, z))
+
+    def apply_rules(self):
+        current_points = list(self.points.keys())
+        for k in current_points:
+            active_neighbours = 0
+            v = self.points[k]
+            for point in self.loop_negihbours(k):
+                if point != k:
+                    val = self.points.get(point, None)
+                    if val is None:
+                        self.points[point] = False
+                        for d in ("x", "y", "z"):
+                            p = getattr(point, d)
+                            if self.mins[d] > p:
+                                self.mins[d] = p
+                            elif self.maxs[d] < p:
+                                self.maxs[d] = p
+                    elif val:
+                        active_neighbours += 1
+            print(k, active_neighbours)
+            if v and active_neighbours not in (2, 3):
+                self.points[k] = False
+            if not v and active_neighbours == 3:
+                self.points[k] = True
 
 
 def part_1():
     points = Points()
+    points.show()
+    points.apply_rules()
     points.show()
     return ""
 
