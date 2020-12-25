@@ -35,43 +35,58 @@ class Points:
             print()
         print("-----------------------------------------------------------------")
 
-    def loop_negihbours(self, k):
+    def loop_neighbours(self, k):
         for x in (k.x - 1, k.x, k.x + 1):
             for y in (k.y - 1, k.y, k.y + 1):
                 for z in (k.z - 1, k.z, k.z + 1):
-                    yield (Point(x, y, z))
+                    point = Point(x, y, z)
+                    if point != k:
+                        yield (point)
 
     def apply_rules(self):
         current_points = list(self.points.keys())
+        updates = {}
         for k in current_points:
             active_neighbours = 0
             v = self.points[k]
-            for point in self.loop_negihbours(k):
-                if point != k:
-                    val = self.points.get(point, None)
-                    if val is None:
-                        self.points[point] = False
+            for point in self.loop_neighbours(k):
+                if self.points.get(point, None):
+                    active_neighbours += 1
+            # print(k, v, active_neighbours, active_neighbours not in (2, 3))
+            if v and (active_neighbours not in (2, 3)):
+                updates[k] = False
+            elif (not v) and (active_neighbours == 3):
+                updates[k] = True
+        self.points.update(updates)
+
+        # Expand list of points to neighbours of active points
+        new = {}
+        for k in self.points.keys():
+            # if self.points[k]:
+            if 1:
+                for point in self.loop_neighbours(k):
+                    if self.points.get(point, None) is None:
+                        new[point] = False
                         for d in ("x", "y", "z"):
                             p = getattr(point, d)
                             if self.mins[d] > p:
                                 self.mins[d] = p
                             elif self.maxs[d] < p:
                                 self.maxs[d] = p
-                    elif val:
-                        active_neighbours += 1
-            print(k, active_neighbours)
-            if v and active_neighbours not in (2, 3):
-                self.points[k] = False
-            if not v and active_neighbours == 3:
-                self.points[k] = True
+        self.points.update(new)
+
+    def count_active(self):
+        return sum(1 for v in self.points.values() if v)
 
 
 def part_1():
     points = Points()
     points.show()
-    points.apply_rules()
+    for r in range(6):
+        points.apply_rules()
     points.show()
-    return ""
+    print(points.count_active())
+    return points.count_active()
 
 
 def part_2():
