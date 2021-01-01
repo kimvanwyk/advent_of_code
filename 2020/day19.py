@@ -1,21 +1,19 @@
-import re
+import regex
 
 import common
 from common import debug
 import settings
 
-
-print(
-    '{"r0": "{r4}{r1}{r5}", "r1": "({r2}{r3}|{r3}{r2})", "r2": "({r4}{r4}|{r5}{r5})", "r3": "({r4}{r5}|{r5}{r4})", "r4":"a", "r5":"b"}'
-)
+LONGEST_LINE = 96
 
 
-def process():
+def process(mapping={}):
     rules = {}
     input_data = common.read_string_file()
     for line in input_data:
         if not line:
             break
+        line = mapping.get(line, line)
         (r, pattern) = line.split(":")
         p = []
         if "|" in pattern:
@@ -41,7 +39,7 @@ def part_1():
     while "{" in pattern:
         pattern = pattern.format(**rules)
     debug(pattern)
-    pat = re.compile(pattern)
+    pat = regex.compile(pattern)
 
     match_count = 0
     for msg in messages:
@@ -54,4 +52,25 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (rules, messages) = process(
+        {"8: 42": "8: 42 | 42 8", "11: 42 31": "11: 42 31 | 42 11 31"}
+    )
+    replacements = {"r8": "({r42})+?", "r11": "(<42_xxx>{r42})+({31_yyyr31})+?"}
+
+    pattern = rules["r0"]
+    for (r, rep) in replacements.items():
+        rules[r] = rep
+
+    while "{" in pattern:
+        pattern = pattern.format(**rules)
+    print(pattern)
+    pat = regex.compile(pattern)
+
+    match_count = 0
+    for msg in messages:
+        m = bool(pat.match(msg))
+        debug(f"{msg}: {m}")
+        if m:
+            match_count += 1
+
+    return match_count
