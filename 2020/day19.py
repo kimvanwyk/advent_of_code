@@ -55,15 +55,18 @@ def part_2():
     (rules, messages) = process(
         {"8: 42": "8: 42 | 42 8", "11: 42 31": "11: 42 31 | 42 11 31"}
     )
-    replacements = {"r8": "({r42})+?", "r11": "(<42_xxx>{r42})+({31_yyyr31})+?"}
+
+    rules["r8"] = "({r42})+"
+    run = []
+    for n in range(1, LONGEST_LINE + 1):
+        run.append(f"(({{r42}}[{n}])({{r31}}[{n}]))")
+    rules["r11"] = f"({'|'.join(run)})"
 
     pattern = rules["r0"]
-    for (r, rep) in replacements.items():
-        rules[r] = rep
-
     while "{" in pattern:
         pattern = pattern.format(**rules)
-    print(pattern)
+    pattern = pattern.replace("[", "{").replace("]", "}")
+    # print(pattern)
     pat = regex.compile(pattern)
 
     match_count = 0
