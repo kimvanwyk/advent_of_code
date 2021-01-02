@@ -13,24 +13,27 @@ def boolify(char):
 
 def process():
     input_data = common.read_string_file()
+    edges = {}
     tiles = {}
     for line in input_data:
         if "Tile" in line:
             tid = int(line[5:-1])
-            tiles[tid] = {"t": [], "l": [], "r": [], "b": []}
+            edges[tid] = {"t": [], "l": [], "r": [], "b": []}
+            tiles[tid] = []
             n = -1
         else:
             if line:
+                tiles[tid].append([boolify(c) for c in line])
                 if n < 0:
                     length = len(line)
                 n += 1
                 if n == 0:
-                    tiles[tid]["t"] = [boolify(c) for c in line]
+                    edges[tid]["t"] = [boolify(c) for c in line]
                 elif n == length - 1:
-                    tiles[tid]["b"] = [boolify(c) for c in line]
-                tiles[tid]["l"].append(boolify(line[0]))
-                tiles[tid]["r"].append(boolify(line[-1]))
-    return tiles
+                    edges[tid]["b"] = [boolify(c) for c in line]
+                edges[tid]["l"].append(boolify(line[0]))
+                edges[tid]["r"].append(boolify(line[-1]))
+    return (edges, tiles)
 
 
 def find_unique_edge_count(tiles):
@@ -44,11 +47,31 @@ def find_unique_edge_count(tiles):
     return edges
 
 
+def show(tile):
+    for row in tile:
+        debug("".join("#" if c else "." for c in row))
+
+
+def find_layout(tiles):
+    pairs = []
+    for (t1, t2) in combinations(tiles.keys(), 2):
+        for (s1, e1) in tiles[t1].items():
+            for (s2, e2) in tiles[t2].items():
+                if e1 == e2:
+                    pairs.append(((t1, s1, False), (t2, s2, False)))
+                elif e1 == e2[::-1]:
+                    pairs.append(((t1, s1, False), (t2, s2, True)))
+    return pairs
+
+
 def part_1():
-    tiles = process()
-    edges = find_unique_edge_count(tiles)
-    return prod(tid for (tid, edges) in edges.items() if edges == 2)
+    (edges, _) = process()
+    edge_counts = find_unique_edge_count(edges)
+    return prod(tid for (tid, count) in edge_counts.items() if count == 2)
 
 
 def part_2():
-    return process()
+    (edges, tiles) = process()
+    pairs = find_layout(edges)
+    show(tiles[2311])
+    return pairs
