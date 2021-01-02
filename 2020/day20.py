@@ -1,3 +1,7 @@
+from collections import defaultdict
+from itertools import combinations
+from math import prod
+
 import common
 from common import debug
 import settings
@@ -29,9 +33,21 @@ def process():
     return tiles
 
 
+def find_unique_edge_count(tiles):
+    edges = defaultdict(int)
+    for (t1, t2) in combinations(tiles.keys(), 2):
+        for e1 in tiles[t1].values():
+            for e2 in tiles[t2].values():
+                if (e1 == e2) or (e1 == e2[::-1]):
+                    edges[t1] += 1
+                    edges[t2] += 1
+    return edges
+
+
 def part_1():
     tiles = process()
-    debug(tiles[2311])
+    edges = find_unique_edge_count(tiles)
+    return prod(tid for (tid, edges) in edges.items() if edges == 2)
 
 
 def part_2():
