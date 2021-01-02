@@ -2,6 +2,8 @@ from collections import defaultdict
 from itertools import combinations
 from math import prod
 
+import numpy
+
 import common
 from common import debug
 import settings
@@ -13,27 +15,18 @@ def boolify(char):
 
 def process():
     input_data = common.read_string_file()
-    edges = {}
     tiles = {}
     for line in input_data:
         if "Tile" in line:
             tid = int(line[5:-1])
-            edges[tid] = {"t": [], "l": [], "r": [], "b": []}
-            tiles[tid] = []
+            array = []
             n = -1
+        elif line:
+            array.append([c for c in line])
         else:
-            if line:
-                tiles[tid].append([boolify(c) for c in line])
-                if n < 0:
-                    length = len(line)
-                n += 1
-                if n == 0:
-                    edges[tid]["t"] = [boolify(c) for c in line]
-                elif n == length - 1:
-                    edges[tid]["b"] = [boolify(c) for c in line]
-                edges[tid]["l"].append(boolify(line[0]))
-                edges[tid]["r"].append(boolify(line[-1]))
-    return (edges, tiles)
+            tiles[tid] = numpy.array(array)
+
+    return tiles
 
 
 def find_unique_edge_count(tiles):
@@ -49,7 +42,7 @@ def find_unique_edge_count(tiles):
 
 def show(tile):
     for row in tile:
-        debug("".join("#" if c else "." for c in row))
+        debug("".join(row))
 
 
 def find_layout(tiles):
@@ -65,7 +58,9 @@ def find_layout(tiles):
 
 
 def part_1():
-    (edges, _) = process()
+    tiles = process()
+    show(tiles[2311])
+    return ""
     edge_counts = find_unique_edge_count(edges)
     return prod(tid for (tid, count) in edge_counts.items() if count == 2)
 
