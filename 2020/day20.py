@@ -36,7 +36,15 @@ def show(tile):
 
 
 def get_edges(tile):
-    edges = [list(t) for t in [tile[0, :], tile[-1, :], tile[:, 0], tile[:, -1]]]
+    edges = [
+        (side, list(t))
+        for (side, t) in [
+            ("t", tile[0, :]),
+            ("b", tile[-1, :]),
+            ("l", tile[:, 0]),
+            ("r", tile[:, -1]),
+        ]
+    ]
     return edges
 
 
@@ -46,8 +54,8 @@ def find_unique_edge_count(tiles):
     for (t1, t2) in combinations(tiles.keys(), 2):
         edges1 = edges.setdefault(t1, get_edges(tiles[t1]))
         edges2 = edges.setdefault(t2, get_edges(tiles[t2]))
-        for e1 in edges1:
-            for e2 in edges2:
+        for (_, e1) in edges1:
+            for (_, e2) in edges2:
                 if (e1 == e2) or (e1 == e2[::-1]):
                     edge_counts[t1] += 1
                     edge_counts[t2] += 1
@@ -56,7 +64,10 @@ def find_unique_edge_count(tiles):
 
 def find_layout(tiles):
     pairs = []
+    edges = {}
     for (t1, t2) in combinations(tiles.keys(), 2):
+        edges1 = edges.setdefault(t1, get_edges(tiles[t1]))
+        edges2 = edges.setdefault(t2, get_edges(tiles[t2]))
         for (s1, e1) in tiles[t1].items():
             for (s2, e2) in tiles[t2].items():
                 if e1 == e2:
@@ -73,7 +84,6 @@ def part_1():
 
 
 def part_2():
-    (edges, tiles) = process()
-    pairs = find_layout(edges)
-    show(tiles[2311])
+    tiles = process()
+    pairs = find_layout(tiles)
     return pairs
