@@ -1,0 +1,17 @@
+[tool.poetry]
+name = "2021_aoc"
+version = "0.1.0"
+description = "2021 Advent of Code"
+authors = ["kimv <kimv@sahomeloans.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.9"
+black = "^21.11b1"
+rich = "^10.15.1"
+pyperclip = "^1.8.2"
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
