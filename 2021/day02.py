@@ -3,18 +3,24 @@ from common import debug
 import settings
 
 
-MAPPINGS = {"forward": ("horizontal", 1), "down": ("depth", 1), "up": ("depth", -1)}
+MAPPINGS = {"down": 1, "up": -1}
 
 
 def process():
-    position = {"horizontal": 0, "depth": 0}
+    horizontal = 0
+    depth = 0
+    aim = 0
     input_data = common.read_string_file()
     for instruction in input_data:
         (direction, amount) = instruction.split(" ")
-        (key, multiplier) = MAPPINGS[direction]
-        position[key] += int(amount) * multiplier
-    debug(position)
-    return position["horizontal"] * position["depth"]
+        if direction in MAPPINGS:
+            aim += int(amount) * MAPPINGS[direction]
+        else:
+            # direction must be forward
+            horizontal += int(amount)
+            depth += aim * int(amount)
+    debug(locals())
+    return horizontal * depth
 
 
 def part_1():
