@@ -5,11 +5,12 @@ description = "2021 Advent of Code"
 authors = ["kimv <kimv@sahomeloans.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = ">=3.9,<3.11"
 black = "^21.11b1"
 rich = "^10.15.1"
 pyperclip = "^1.8.2"
 attrs = "^21.2.0"
+numpy = "^1.21.4"
 
 [tool.poetry.dev-dependencies]
 
