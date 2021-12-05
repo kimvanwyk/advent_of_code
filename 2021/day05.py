@@ -32,25 +32,26 @@ def process(include_diag=False):
                 if difference:
                     increment[pos] = difference // abs(difference)
             debug(f"{points=}  {increment=}")
-            point = points[0]
-            while True:
-                grid[tuple(point)] += 1
-                debug(tuple(point))
-                point[0] += increment[0]
-                point[1] += increment[1]
-                if point == points[1]:
+            # all(increment) will be true for a diag but not a straight
+            if include_diag or not all(increment):
+                point = points[0]
+                while True:
                     grid[tuple(point)] += 1
                     debug(tuple(point))
-                    break
+                    point[0] += increment[0]
+                    point[1] += increment[1]
+                    if point == points[1]:
+                        grid[tuple(point)] += 1
+                        debug(tuple(point))
+                        break
     debug(grid)
     print_grid(grid)
-    # return len([v for v in grid.values() if v >= 2])
-    return ""
+    return len([v for v in grid.values() if v >= 2])
 
 
 def part_1():
-    return process()
+    return process(include_diag=False)
 
 
 def part_2():
-    return process()
+    return process(include_diag=True)
