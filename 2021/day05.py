@@ -13,12 +13,11 @@ def print_grid(grid):
             for y in range(maxy):
                 # print(row, col, grid[(row, col)])
                 val = grid[(y, x)] or "."
-                print(f"{val}  ", end="")
+                print(f"{val} ", end="")
             print()
 
 
-def process():
-
+def process(include_diag=False):
     input_data = common.read_string_file()
     grid = defaultdict(int)
     for line in input_data:
@@ -27,30 +26,26 @@ def process():
             points = [
                 [int(p) for p in point.strip().split(",")] for point in line.split("->")
             ]
-            for (fixed_pos, var_pos) in ((0, 1), (1, 0)):
-                increment = [None, None]
-                straight = False
-                if points[0][fixed_pos] == points[1][fixed_pos]:
-                    straight = True
-                    difference = points[1][var_pos] - points[0][var_pos]
-                    increment[fixed_pos] = 0
-                    increment[var_pos] = difference // abs(difference)
-                    debug(f"{points=}  {increment=}")
-                    point = points[0]
-                    while True:
-                        grid[tuple(point)] += 1
-                        debug(tuple(point))
-                        point[0] += increment[0]
-                        point[1] += increment[1]
-                        if point == points[1]:
-                            grid[tuple(point)] += 1
-                            debug(tuple(point))
-                            break
-                if straight:
+            increment = [0, 0]
+            for pos in (0, 1):
+                difference = points[1][pos] - points[0][pos]
+                if difference:
+                    increment[pos] = difference // abs(difference)
+            debug(f"{points=}  {increment=}")
+            point = points[0]
+            while True:
+                grid[tuple(point)] += 1
+                debug(tuple(point))
+                point[0] += increment[0]
+                point[1] += increment[1]
+                if point == points[1]:
+                    grid[tuple(point)] += 1
+                    debug(tuple(point))
                     break
     debug(grid)
     print_grid(grid)
-    return len([v for v in grid.values() if v >= 2])
+    # return len([v for v in grid.values() if v >= 2])
+    return ""
 
 
 def part_1():
