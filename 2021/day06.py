@@ -2,28 +2,30 @@ import common
 from common import debug
 import settings
 
-import numpy as np
-
+from collections import defaultdict
 
 FIRST_DEBUG_DAYS = 18
 
 
 def process(target_day):
     input_data = common.read_string_file()
-    fishes = np.array([int(i) for i in next(input_data).split(",")], dtype=np.int8)
+    fishes = defaultdict(int)
+    for fish in [int(i) for i in next(input_data).split(",")]:
+        fishes[fish] += 1
     day = 0
     debug(fishes)
     while True:
         day += 1
-        fishes -= 1
-        new_fish_count = (fishes == -1).sum()
-        fishes[fishes == -1] = 6
-        if new_fish_count:
-            fishes = np.append(fishes, [8] * new_fish_count)
+        new = fishes[0]
+        for n in range(1, 9):
+            fishes[n - 1] = fishes[n]
+        fishes[6] += new
+        fishes[8] = new
         if day <= FIRST_DEBUG_DAYS:
-            debug(f"{day: 2}: {fishes}")
+            debug(f"{day: 2}: {fishes}  {new=}")
         if day == target_day:
-            return len(fishes)
+            debug(list(fishes.values()))
+            return sum(list(fishes.values()))
 
 
 def part_1():
