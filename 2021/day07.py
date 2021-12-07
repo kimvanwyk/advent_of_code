@@ -15,6 +15,10 @@ def p1_fuel_cost(distance):
     return distance
 
 
+def p2_fuel_cost(distance):
+    return (distance * (distance + 1)) // 2
+
+
 def process(fuel_cost_func):
     input_data = common.read_string_file()
     crabs = [int(i) for i in next(input_data).split(",")]
@@ -31,4 +35,4 @@ def part_1():
 
 
 def part_2():
-    return process()
+    return process(p2_fuel_cost)
