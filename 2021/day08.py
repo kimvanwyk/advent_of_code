@@ -1,8 +1,12 @@
+from collections import Counter
+
 import common
 from common import debug
 import settings
 
 import attr
+
+SEGMENT_LENGTHS = {1: 2, 2: 5, 3: 5, 4: 4, 5: 5, 6: 6, 7: 3, 8: 7, 9: 6}
 
 
 @attr.s
@@ -38,4 +42,14 @@ def part_1():
 
 
 def part_2():
-    return process()
+    displays = process()
+    for display in displays:
+        lengths = Counter([len(d) for d in display.signals + display.segments])
+        must_have = (1, 7, 4, 8)
+        if not all([SEGMENT_LENGTHS[k] in lengths.keys() for k in must_have]):
+            print(lengths.keys())
+            print(f"No combo of: {must_have} on at least 1 line")
+            break
+    else:
+        print(f"No lines without: {must_have}")
+    return ""
