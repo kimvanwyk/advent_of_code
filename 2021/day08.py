@@ -18,16 +18,16 @@ import attr
 
 SEGMENT_LENGTHS = {1: 2, 2: 5, 3: 5, 4: 4, 5: 5, 6: 6, 7: 3, 8: 7, 9: 6}
 SEGMENTS = {
-    0: {1, 2, 3, 5, 6, 7},
-    1: {3, 6},
-    2: {1, 3, 4, 5, 6},
-    3: {1, 3, 4, 6, 7},
-    4: {2, 4, 3, 6},
-    5: {1, 2, 4, 6, 7},
-    6: {1, 2, 4, 5, 6, 7},
-    7: {1, 3, 6},
-    8: {1, 2, 3, 4, 5, 6, 7},
-    9: {1, 2, 3, 4, 6, 7},
+    (1, 2, 3, 5, 6, 7): 0,
+    (3, 6): 1,
+    (1, 3, 4, 5, 7): 2,
+    (1, 3, 4, 6, 7): 3,
+    (2, 3, 4, 6): 4,
+    (1, 2, 4, 6, 7): 5,
+    (1, 2, 4, 5, 6, 7): 6,
+    (1, 3, 6): 7,
+    (1, 2, 3, 4, 5, 6, 7): 8,
+    (1, 2, 3, 4, 6, 7): 9,
 }
 
 
@@ -39,8 +39,11 @@ class Display:
     def set_from_input_line(self, input_line):
         for (attr, items) in zip(("signals", "segments"), input_line.split("|")):
             setattr(self, attr, [s.strip() for s in items.split(" ") if s.strip()])
+            setattr(
+                self, f"{attr}_sets", [set([c for c in s]) for s in getattr(self, attr)]
+            )
         self.all = self.signals + self.segments
-        self.allsets = [set([c for c in val]) for val in self.all]
+        self.all_sets = self.signals_sets + self.segments_sets
 
     def count_matching_segment_lengths(self, lengths):
         return len([s for s in self.segments if len(s) in lengths])
@@ -63,13 +66,22 @@ class Display:
 
         return [
             f(val)
-            for val in self.allsets
+            for val in self.all_sets
             if len(val) == length and set(chars).issubset(val)
         ]
 
     def get_non_matching_char_sets(self, chars):
         """Return any sets of chars of the same length as the chars input that don't match it"""
-        return [c for c in self.allsets if (len(c) == len(chars)) and (c != chars)]
+        return [c for c in self.all_sets if (len(c) == len(chars)) and (c != chars)]
+
+    def set_segment_value(self):
+        vals = []
+        for segment_set in self.segments_sets:
+            segment = [self.segment_names[s] for s in segment_set]
+            segment.sort()
+            vals.append(SEGMENTS[tuple(segment)])
+        self.segment_value = int("".join(str(v) for v in vals))
+        debug(self.segment_value)
 
     def calculate_segments(self):
         self.segments = {}
@@ -120,8 +132,10 @@ class Display:
         # the difference between D2's chars and D4 must be D2
         self.segments[2] = set(self.segments[2]).difference(self.segments[4])
 
+        self.segment_names = {list(v)[0]: k for (k, v) in self.segments.items()}
         debug(self.segments)
-        return self.segments
+        debug(self.segment_names)
+        self.set_segment_value()
 
 
 def process():
@@ -182,6 +196,8 @@ def part_1():
 def part_2():
     # print_must_haves(displays)
     # any_fives(displays)
+    total = 0
     for display in process():
         display.calculate_segments()
-    return ""
+        total += display.segment_value
+    return total
