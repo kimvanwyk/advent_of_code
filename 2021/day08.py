@@ -6,7 +6,29 @@ import settings
 
 import attr
 
+# Segment numbering:
+
+#  111
+# 2   3
+# 2   3
+#  444
+# 5   6
+# 5   6
+#  777
+
 SEGMENT_LENGTHS = {1: 2, 2: 5, 3: 5, 4: 4, 5: 5, 6: 6, 7: 3, 8: 7, 9: 6}
+SEGMENTS = {
+    0: {1, 2, 3, 5, 6, 7},
+    1: {3, 6},
+    2: {1, 3, 4, 5, 6},
+    3: {1, 3, 4, 6, 7},
+    4: {2, 4, 3, 6},
+    5: {1, 2, 4, 6, 7},
+    6: {1, 2, 4, 5, 6, 7},
+    7: {1, 3, 6},
+    8: {1, 2, 3, 4, 5, 6, 7},
+    9: {1, 2, 3, 4, 6, 7},
+}
 
 
 @attr.s
@@ -48,6 +70,58 @@ class Display:
     def get_non_matching_char_sets(self, chars):
         """Return any sets of chars of the same length as the chars input that don't match it"""
         return [c for c in self.allsets if (len(c) == len(chars)) and (c != chars)]
+
+    def calculate_segments(self):
+        self.segments = {}
+        # get chars for D1
+        chars = self.get_chars_of_length(SEGMENT_LENGTHS[1])
+        self.segments[3] = chars
+        self.segments[6] = chars[:]
+
+        # get chars for D7 and diff with S3
+        chars = self.get_chars_of_length(SEGMENT_LENGTHS[7])
+        self.segments[1] = [c for c in chars if not c in self.segments[3]]
+
+        # get chars for D4 and diff with S3
+        chars = self.get_chars_of_length(SEGMENT_LENGTHS[4])
+        self.segments[2] = [c for c in chars if not c in self.segments[3]]
+        self.segments[4] = self.segments[2][:]
+
+        # any_fives proved all lines have a D5
+        # get the chars from the first 5 that aren't in S1 and S2
+        five_chars = self.length_subsets(
+            self.segments[1] + self.segments[2], SEGMENT_LENGTHS[5]
+        )[0]
+        unmatched_chars = five_chars.difference(
+            set(self.segments[1] + self.segments[2])
+        )
+        # The overlap between the options for S6 and the unmatched D5 chars must be S6
+        self.segments[6] = unmatched_chars.intersection(set(self.segments[6]))
+
+        # S3 mmust be option for S3 that isn't S6
+        self.segments[3] = set(self.segments[3]).difference(set(self.segments[6]))
+
+        # S7 must the be the value from the unmatched chars that isn't S6
+        self.segments[7] = unmatched_chars.difference(set(self.segments[6]))
+
+        # S5 must be the only unused letter
+        used = []
+        for v in [list(v) for v in self.segments.values()]:
+            used.extend(v)
+        self.segments[5] = list(
+            set(["a", "b", "c", "d", "e", "f", "g"]).difference(set(used))
+        )
+
+        # of the 5-length values, only D5 contains S2 - the intersection of D4's chars and the first of those 5 length values must be D4
+        self.segments[4] = self.get_non_matching_char_sets(five_chars)[0].intersection(
+            set(self.segments[4])
+        )
+
+        # the difference between D2's chars and D4 must be D2
+        self.segments[2] = set(self.segments[2]).difference(self.segments[4])
+
+        debug(self.segments)
+        return self.segments
 
 
 def process():
@@ -97,56 +171,6 @@ def any_fives(displays):
     print(count)
 
 
-def find_segments(display):
-    possibilities = {}
-    # get chars for D1
-    chars = display.get_chars_of_length(SEGMENT_LENGTHS[1])
-    possibilities[3] = chars
-    possibilities[6] = chars[:]
-
-    # get chars for D7 and diff with S3
-    chars = display.get_chars_of_length(SEGMENT_LENGTHS[7])
-    possibilities[1] = [c for c in chars if not c in possibilities[3]]
-
-    # get chars for D4 and diff with S3
-    chars = display.get_chars_of_length(SEGMENT_LENGTHS[4])
-    possibilities[2] = [c for c in chars if not c in possibilities[3]]
-    possibilities[4] = possibilities[2][:]
-
-    # any_fives proved all lines have a D5
-    # get the chars from the first 5 that aren't in S1 and S2
-    five_chars = display.length_subsets(
-        possibilities[1] + possibilities[2], SEGMENT_LENGTHS[5]
-    )[0]
-    unmatched_chars = five_chars.difference(set(possibilities[1] + possibilities[2]))
-    # The overlap between the options for S6 and the unmatched D5 chars must be S6
-    possibilities[6] = unmatched_chars.intersection(set(possibilities[6]))
-
-    # S3 mmust be option for S3 that isn't S6
-    possibilities[3] = set(possibilities[3]).difference(set(possibilities[6]))
-
-    # S7 must the be the value from the unmatched chars that isn't S6
-    possibilities[7] = unmatched_chars.difference(set(possibilities[6]))
-
-    # S5 must be the only unused letter
-    used = []
-    for v in [list(v) for v in possibilities.values()]:
-        used.extend(v)
-    possibilities[5] = list(
-        set(["a", "b", "c", "d", "e", "f", "g"]).difference(set(used))
-    )
-
-    # of the 5-length values, only D5 contains S2 - the intersection of D4's chars and the first of those 5 length values must be D4
-    possibilities[4] = display.get_non_matching_char_sets(five_chars)[0].intersection(
-        set(possibilities[4])
-    )
-
-    # the difference between D2's chars and D4 must be D2
-    possibilities[2] = set(possibilities[2]).difference(possibilities[4])
-
-    print(possibilities)
-
-
 def part_1():
     displays = process()
     # find sum of 1s, 4s, 7s and 8s (with segment length of 2, 3, 4 and 7 respectively
@@ -156,8 +180,8 @@ def part_1():
 
 
 def part_2():
-    displays = process()
     # print_must_haves(displays)
     # any_fives(displays)
-    find_segments(displays[0])
+    for display in process():
+        display.calculate_segments()
     return ""
