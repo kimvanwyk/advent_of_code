@@ -1,3 +1,6 @@
+from collections import Counter
+from math import prod
+
 import common
 from common import debug
 import settings
@@ -36,24 +39,32 @@ class Grid:
         return self.risk
 
     def process_basins(self):
-        in_basin = False
         basin_val = 0
         for y in range(self.height):
             for x in range(self.width):
-                val = self.grid[(x, y)]
-                if val == 9 and in_basin:
-                    in_basin = False
-                if 0 <= val < 9:
-                    if not in_basin:
-                        in_basin = True
+                if 0 <= self.grid[(x, y)] < 9:
+                    # check if the four points nearby are part of a basin
+                    for pos in ((x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1)):
+                        neighbour = self.grid.get(pos, 10)
+                        if neighbour < 0:
+                            self.grid[(x, y)] = neighbour
+                            break
+                    else:
+                        # new basin
                         basin_val -= 1
                         self.grid[(x, y)] = basin_val
+
                 if self.grid[(x, y)] < 0:
-                    for pos in ((x, y + 1), (x + 1, y)):
-                        neighbour = self.grid.get(pos, None)
-                        if neighbour not in (None, 9):
+                    # already in a basin, mark neighbours
+                    for pos in ((x + 1, y), (x - 1, y), (x, y - 1), (x, y + 1)):
+                        if self.grid.get(pos, None) and 0 <= self.grid[pos] < 9:
                             self.grid[pos] = self.grid[(x, y)]
+
         self.show_grid()
+
+        sizes = Counter(v for v in self.grid.values() if v < 0)
+        print(sizes.most_common(3))
+        return prod(v[1] for v in sizes.most_common(3))
 
 
 def process():
@@ -72,5 +83,4 @@ def part_1():
 
 def part_2():
     grid = process()
-    grid.process_basins()
-    return ""
+    return grid.process_basins()
