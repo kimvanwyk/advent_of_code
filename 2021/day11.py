@@ -66,4 +66,6 @@ def part_1():
 
 
 def part_2():
-    return process()
+    grid = process()
+    grid.run_steps("np.all(self.grid == 0)")
+    return grid.steps
