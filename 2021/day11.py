@@ -46,10 +46,12 @@ class Grid:
         debug(self.steps)
         debug(self.grid)
 
-    def run_steps(self, num_steps):
+    def run_steps(self, stop_criteria):
         self.steps = 0
-        while self.steps < num_steps:
+        while True:
             self.step()
+            if eval(stop_criteria):
+                break
 
 
 def process():
@@ -59,7 +61,7 @@ def process():
 
 def part_1():
     grid = process()
-    grid.run_steps(100)
+    grid.run_steps("self.steps == 100")
     return grid.flashes
 
 
