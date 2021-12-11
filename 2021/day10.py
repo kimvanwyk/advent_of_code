@@ -7,6 +7,7 @@ CLOSE = "}])>"
 
 OPEN_TO_CLOSE = {"{": "}", "[": "]", "(": ")", "<": ">"}
 CLOSE_TO_OPEN = {v: k for (k, v) in OPEN_TO_CLOSE.items()}
+POINTS = {")": 3, "]": 57, "}": 1197, ">": 25137}
 
 
 def process():
@@ -27,8 +28,7 @@ def process():
         else:
             debug(f"{line} - No mismatch on line")
     debug(mismatches)
-
-    return ""
+    return sum(POINTS[m] for m in mismatches)
 
 
 def part_1():
