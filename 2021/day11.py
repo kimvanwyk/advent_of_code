@@ -12,12 +12,14 @@ class Grid:
             vals.append([int(l) for l in line])
         self.grid = np.array(vals, dtype=np.int8)
         (self.width, self.height) = self.grid.shape
+        self.flashes = 0
 
     def flash(self, x, y):
         if self.grid[x][y] == -1:
             return
         self.grid[x][y] += 1
         if self.grid[x][y] > 9:
+            self.flashes += 1
             self.grid[x][y] = -1
             for xd in (-1, 0, 1):
                 for yd in (-1, 0, 1):
@@ -57,8 +59,8 @@ def process():
 
 def part_1():
     grid = process()
-    grid.run_steps(10)
-    return ""
+    grid.run_steps(100)
+    return grid.flashes
 
 
 def part_2():
