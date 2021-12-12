@@ -62,50 +62,47 @@ class NodeProcessor:
         self.paths = []
 
     def process(self, node, path, seen_double=False):
-        proceed = False
-        if ["start", "A", "b", "A", "c", "A"] == path[:6]:
-            print(path)
-        for neighbour in self.graph.neighbors(node):
-            # debug(f"{node=}  {neighbour=}")
-            if neighbour == "end":
-                # debug(f"Good path: {path}")
-                if settings.settings.debug:
-                    if (not path) or path[-1] != node:
-                        path.append(node)
-                    self.paths.append(path)
-                self.total_paths += 1
-                continue
-            elif neighbour == "start":
-                continue
-            elif all(n in string.ascii_lowercase for n in neighbour):
-                # if ["start", "A", "b", "A", "c", "A"] == path[:6]:
-                #     print(f"Small cave: {node=}, {neighbour=}, {path + [node]=}")
-                if neighbour in path:
-                    # if ["start", "A", "b", "A", "c", "A"] == path[:6]:
-                    #     print(f"Double: {node=}, {neighbour=}, {path + [node]=}")
-                    if not self.allow_double:
-                        continue
-                    else:
-                        if not seen_double:
-                            seen_double = True
-                            proceed = True
-                        else:
-                            continue
-                else:
-                    proceed = True
-            else:
-                proceed = True
+        debug(f"{node=}  {path=}  {seen_double=}  {bool(path)=}")
 
-            if proceed:
+        proceed = False
+        if node == "end":
+            if settings.settings.debug:
                 if (not path) or path[-1] != node:
                     path.append(node)
+                self.paths.append(path)
+            self.total_paths += 1
+            proceed = False
+        elif node == "start":
+            proceed = False
+        elif all(n in string.ascii_lowercase for n in node):
+            if node in path:
+                if not self.allow_double:
+                    proceed = False
+                else:
+                    if not seen_double:
+                        seen_double = True
+                        proceed = True
+                    else:
+                        proceed = False
+            else:
+                proceed = True
+        else:
+            proceed = True
+
+        if proceed:
+            print(f"Proceed  {path=}  {node=}")
+            if (not path) or path[-1] != node:
+                path.append(node)
+            for neighbour in self.graph.neighbors(node):
+                debug(f"Neighbour  {node=}  {neighbour=}")
                 self.process(neighbour, path[:], seen_double)
 
 
 def part_1():
     graph = process()
     np = NodeProcessor(graph, allow_double=False)
-    np.process("start", [])
+    for node in graph.neighbors("start"):
+        np.process(node, [])
     return np.total_paths
 
 
