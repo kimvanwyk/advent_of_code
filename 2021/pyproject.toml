@@ -12,6 +12,7 @@ pyperclip = "^1.8.2"
 attrs = "^21.2.0"
 numpy = "^1.21.4"
 ptpython = "^3.0.20"
+networkx = {extras = ["default"], version = "^2.6.3"}
 
 [tool.poetry.dev-dependencies]
 

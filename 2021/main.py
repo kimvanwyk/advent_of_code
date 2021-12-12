@@ -27,7 +27,7 @@ if __name__ == "__main__":
     parser.add_argument("-d", action="store_true", help="Whether to include debug")
     parser.add_argument(
         "-p",
-        choices=(1, 2),
+        choices=(1, 2, 3),
         default=None,
         type=int,
         help="If test data is in parts, which part to use. Will override part setting",

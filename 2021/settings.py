@@ -17,7 +17,7 @@ class Settings:
         self.day = int(day)
         self.part = int(part)
 
-        # Trwith part, exclude part from fn if no match found
+        # Try with part, exclude part from fn if no match found
         fn = f"day{self.day:02}_{'test_' if self.test else ''}input_part{test_part}.txt"
         if fn not in os.listdir():
             fn = f"day{self.day:02}_{'test_' if self.test else ''}input.txt"
