@@ -47,7 +47,7 @@ P2_T1_EXPECTED = (
 )
 
 
-def process():
+def get_graph():
     input_data = common.read_string_file()
     G = nx.Graph()
     G.add_edges_from([l.split("-") for l in input_data])
@@ -90,7 +90,7 @@ class NodeProcessor:
             proceed = True
 
         if proceed:
-            print(f"Proceed  {path=}  {node=}")
+            debug(f"Proceed  {path=}  {node=}")
             if (not path) or path[-1] != node:
                 path.append(node)
             for neighbour in self.graph.neighbors(node):
@@ -98,26 +98,17 @@ class NodeProcessor:
                 self.process(neighbour, path[:], seen_double)
 
 
-def part_1():
-    graph = process()
-    np = NodeProcessor(graph, allow_double=False)
+def process(allow_double):
+    graph = get_graph()
+    np = NodeProcessor(graph, allow_double=allow_double)
     for node in graph.neighbors("start"):
         np.process(node, [])
     return np.total_paths
 
 
-def part_2():
-    graph = process()
-    np = NodeProcessor(graph, allow_double=True)
-    np.process("start", [])
-    np.paths.sort()
-    # debug(np.paths)
+def part_1():
+    return process(allow_double=False)
 
-    # if settings.settings.debug:
-    #     unmatched = list(
-    #         set(P2_T1_EXPECTED).difference(set((tuple(p) for p in np.paths)))
-    #     )
-    #     unmatched.sort()
-    #     for path in unmatched:
-    #         debug(path)
-    return np.total_paths
+
+def part_2():
+    return process(allow_double=True)
