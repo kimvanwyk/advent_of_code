@@ -59,15 +59,19 @@ class Array:
         self.array = np.delete(self.array, pivot, axis)
         return np.count_nonzero(self.array == True)
 
+    def apply_folds(self, limit):
+        for (n, fold) in enumerate(self.folds, 1):
+            val = self.fold(fold)
+            self.show()
+            debug(val)
+            debug("")
+            if n == limit:
+                return val
+
 
 def part_1():
     a = Array()
-    debug(a.folds)
-    a.show()
-    debug(a.fold(a.folds[0]))
-    debug("")
-    a.show()
-    return ""
+    return a.apply_folds(1)
 
 
 def part_2():
