@@ -32,9 +32,8 @@ class Array:
                 self.folds.append((vals[0], int(vals[1])))
 
     def show(self):
-        if settings.settings.debug:
-            for row in self.array:
-                debug(" ".join("#" if col else "." for col in row))
+        for row in self.array:
+            print(" ".join("#" if col else "." for col in row))
 
     def fold(self, fold):
         pivot = fold[1]
@@ -59,14 +58,16 @@ class Array:
         self.array = np.delete(self.array, pivot, axis)
         return np.count_nonzero(self.array == True)
 
-    def apply_folds(self, limit):
+    def apply_folds(self, limit=None):
         for (n, fold) in enumerate(self.folds, 1):
             val = self.fold(fold)
-            self.show()
+            if settings.settings.debug:
+                self.show()
             debug(val)
             debug("")
-            if n == limit:
+            if limit and (n == limit):
                 return val
+        return val
 
 
 def part_1():
@@ -75,4 +76,7 @@ def part_1():
 
 
 def part_2():
-    return process()
+    a = Array()
+    a.apply_folds()
+    a.show()
+    return ""
