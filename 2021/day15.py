@@ -6,15 +6,25 @@ import networkx as nx
 
 
 class Graph:
-    def __init__(self):
+    def __init__(self, repeats):
         input_data = common.read_string_file()
         self.graph = nx.Graph()
-        for (y, line) in enumerate(input_data):
-            if line:
-                for (x, v) in enumerate(line):
-                    self.graph.add_node((x, y), weight=int(v))
-            self.maxx = x
-        self.maxy = y
+        self.maxx = 0
+        self.maxy = 0
+        for ymult in range(repeats):
+            input_data = common.read_string_file()
+            for (y, line) in enumerate(input_data):
+                if line:
+                    for xmult in range(repeats):
+                        for (x, v) in enumerate(line):
+                            self.graph.add_node(
+                                (x + (self.maxx * xmult), y + (self.maxy + ymult)),
+                                weight=int(v),
+                            )
+                        if xmult == 0:
+                            self.maxx = x
+        if ymult == 0:
+            self.maxy = y
         for x in range(self.maxx + 1):
             for y in range(self.maxy + 1):
                 for (xd, yd) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
@@ -35,7 +45,7 @@ class Graph:
 
 
 def part_1():
-    graph = Graph()
+    graph = Graph(1)
     return graph.cheapest_path()
 
 
