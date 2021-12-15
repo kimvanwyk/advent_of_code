@@ -12,8 +12,6 @@ def process():
     input_data = common.read_string_file()
     line = next(input_data)
     pairs = Counter()
-    start = line[0]
-    end = line[-1]
     for i in range(len(line) - 1):
         pairs[f"{line[i]}{line[i+1]}"] += 1
     mappings = {}
@@ -26,10 +24,10 @@ def process():
             )
     debug(pairs)
     debug(mappings)
-    return (pairs, mappings, start, end)
+    return (pairs, mappings)
 
 
-def build_pairs(pairs, mappings, start, end, steps):
+def build_pairs(pairs, mappings, steps):
     for step in range(steps):
         new_pairs = Counter()
         for pair in pairs:
@@ -46,8 +44,6 @@ def build_pairs(pairs, mappings, start, end, steps):
             count[c] += v
     for (k, v) in count.items():
         count[k] = math.ceil(v / 2)
-    # count[start] += 1
-    # count[end] += 1
 
     totals = count.most_common()
     debug(f"Most common after {step+1} steps: {totals[0]}")
@@ -57,10 +53,10 @@ def build_pairs(pairs, mappings, start, end, steps):
 
 
 def part_1():
-    (pairs, mappings, start, end) = process()
-    return build_pairs(pairs, mappings, start, end, 10)
+    (pairs, mappings) = process()
+    return build_pairs(pairs, mappings, 10)
 
 
 def part_2():
-    (polymer, mappings, start, end) = process()
+    (polymer, mappings) = process()
     return build_polymer(polymer, mappings, 40)
