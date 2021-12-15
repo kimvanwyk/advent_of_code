@@ -1,5 +1,5 @@
 from collections import Counter
-import tempfile
+import math
 
 import common
 from common import debug
@@ -10,55 +10,57 @@ import numpy as np
 
 def process():
     input_data = common.read_string_file()
-    polymer = np.array([c for c in next(input_data)])
+    line = next(input_data)
+    pairs = Counter()
+    start = line[0]
+    end = line[-1]
+    for i in range(len(line) - 1):
+        pairs[f"{line[i]}{line[i+1]}"] += 1
     mappings = {}
     for l in input_data:
         if l:
             mapping = l.strip().split(" -> ")
-            mappings[mapping[0]] = f"{mapping[0][0]}{mapping[1]}"
-    debug(polymer)
+            mappings[mapping[0]] = (
+                f"{mapping[0][0]}{mapping[1]}",
+                f"{mapping[1]}{mapping[0][1]}",
+            )
+    debug(pairs)
     debug(mappings)
-    return (polymer, mappings)
+    return (pairs, mappings, start, end)
 
 
-def build_polymer(polymer, mappings, steps):
-    fsource = tempfile.NamedTemporaryFile("w+", dir="files_day14", delete=False)
-    fsource.write("".join(polymer))
-    fsource.seek(0)
-    fout = tempfile.NamedTemporaryFile("w+", dir="files_day14", delete=False)
-    while True:
-        res = fsource.read(2)
-        if len(res) == 1:
-            fout.write(res)
-            break
-        if not res:
-            break
-        debug(res)
-        fout.write(mappings[res])
-        fsource.seek(fsource.tell() - 1, 0)
-    fout.seek(0)
-    debug(fout.read())
-    # for step in range(steps):
-    #     for i in range(len(polymer) - 1, 0, -1):
-    #         polymer = np.insert(polymer, i, mappings[f"{polymer[i-1]}{polymer[i]}"])
-    #     if step < 4:
-    #         debug(f"{step=}  {polymer=}")
+def build_pairs(pairs, mappings, start, end, steps):
+    for step in range(steps):
+        new_pairs = Counter()
+        for pair in pairs:
+            for p in mappings[pair]:
+                new_pairs[p] += pairs[pair]
+        pairs = new_pairs
+        if step < 4:
+            debug(step + 1)
+            debug(pairs)
 
-    # count = Counter(polymer)
-    # totals = count.most_common()
-    # debug(f"Most common after {step+1} steps: {totals[0]}")
-    # debug(f"Least common after {step+1} steps: {totals[-1]}")
-    # debug(f"Difference: {totals[0][1] - totals[-1][1]}")
-    # return totals[0][1] - totals[-1][1]
+    count = Counter()
+    for (k, v) in pairs.items():
+        for c in k:
+            count[c] += v
+    for (k, v) in count.items():
+        count[k] = math.ceil(v / 2)
+    # count[start] += 1
+    # count[end] += 1
+
+    totals = count.most_common()
+    debug(f"Most common after {step+1} steps: {totals[0]}")
+    debug(f"Least common after {step+1} steps: {totals[-1]}")
+    debug(f"Difference: {totals[0][1] - totals[-1][1]}")
+    return totals[0][1] - totals[-1][1]
 
 
 def part_1():
-    (polymer, mappings) = process()
-    build_polymer(polymer, mappings, 1)
-    return ""
-    # return build_polymer(polymer, mappings, 10)
+    (pairs, mappings, start, end) = process()
+    return build_pairs(pairs, mappings, start, end, 10)
 
 
 def part_2():
-    (polymer, mappings) = process()
+    (polymer, mappings, start, end) = process()
     return build_polymer(polymer, mappings, 40)
