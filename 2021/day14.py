@@ -58,5 +58,5 @@ def part_1():
 
 
 def part_2():
-    (polymer, mappings) = process()
-    return build_polymer(polymer, mappings, 40)
+    (pairs, mappings) = process()
+    return build_pairs(pairs, mappings, 40)
