@@ -2,6 +2,7 @@ import common
 from common import debug
 import settings
 
+import math
 
 HEX_MAPPINGS = {
     "0": "0000",
@@ -51,16 +52,14 @@ class Packet:
                     break
         else:
             # operator
+            self.values = []
             if PACKET_STRING[self.idx] == "0":
                 self.sub_bytes_type = "len"
                 self.len_sub_bytes = int(PACKET_STRING[self.idx + 1 : self.idx + 16], 2)
-                debug(self.len_sub_bytes)
                 self.idx += 16
                 target = self.idx + self.len_sub_bytes
                 while self.idx < target:
-                    p = Packet(self.idx)
-                    self.idx = p.idx
-                    self.version_total += p.version_total
+                    self.sub_packet(self.idx)
             else:
                 self.sub_bytes_type = "num"
                 self.num_sub_packets = int(
@@ -68,9 +67,29 @@ class Packet:
                 )
                 self.idx += 12
                 for n in range(self.num_sub_packets):
-                    p = Packet(self.idx)
-                    self.version_total += p.version_total
-                    self.idx = p.idx
+                    self.sub_packet(self.idx)
+
+            # Apply operations
+            if self.type == 0:
+                self.value = sum(self.values)
+            elif self.type == 1:
+                self.value = math.prod(self.values)
+            elif self.type == 2:
+                self.value = min(self.values)
+            elif self.type == 3:
+                self.value = min(self.values)
+            elif self.type == 5:
+                self.value = 1 if self.values[0] > self.values[1] else 0
+            elif self.type == 6:
+                self.value = 1 if self.values[0] < self.values[1] else 0
+            elif self.type == 7:
+                self.value = 1 if self.values[0] == self.values[1] else 0
+
+    def sub_packet(self, idx):
+        p = Packet(idx)
+        self.idx = p.idx
+        self.version_total += p.version_total
+        self.values.append(p.value)
 
 
 def get_bits():
@@ -78,6 +97,7 @@ def get_bits():
     for line in input_data:
         debug(line.strip())
         yield ("".join(HEX_MAPPINGS[c] for c in line.strip()))
+        debug("")
     return ""
 
 
@@ -86,7 +106,7 @@ def process():
         global PACKET_STRING
         PACKET_STRING = bits
         p = Packet(0)
-        debug(p.version_total)
+        debug(f"{p.version_total=}")
     return p
 
 
@@ -96,4 +116,6 @@ def part_1():
 
 
 def part_2():
-    return process()
+    p = process()
+    debug(f"{p.value=}")
+    return p.value
