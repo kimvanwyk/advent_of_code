@@ -77,7 +77,7 @@ class Packet:
             elif self.type == 2:
                 self.value = min(self.values)
             elif self.type == 3:
-                self.value = min(self.values)
+                self.value = max(self.values)
             elif self.type == 5:
                 self.value = 1 if self.values[0] > self.values[1] else 0
             elif self.type == 6:
@@ -106,7 +106,7 @@ def process():
         global PACKET_STRING
         PACKET_STRING = bits
         p = Packet(0)
-        debug(f"{p.version_total=}")
+        debug(f"{p.value=}")
     return p
 
 
