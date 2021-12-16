@@ -28,9 +28,14 @@ PACKET_STRING = ""
 class Packet:
     def __init__(self, idx):
         self.literal = False
+        self.sub_bytes_type = None
+        self.len_sub_bytes = None
+        self.num_sub_packets = None
         self.idx = idx
         self.version = int(PACKET_STRING[self.idx : self.idx + 3], 2)
+        self.version_total = self.version
         self.type = int(PACKET_STRING[self.idx + 3 : self.idx + 6], 2)
+        debug(f"{self.version=}  {self.type=}")
         self.idx += 6
 
         if self.type == 4:
@@ -41,14 +46,37 @@ class Packet:
                 ret = PACKET_STRING[self.idx] == "0"
                 self.idx += 5
                 if ret:
-                    debug("".join(literal_bits))
                     self.value = int("".join(literal_bits), 2)
+                    debug(f"{self.literal=}  {self.value=}")
                     break
+        else:
+            # operator
+            if PACKET_STRING[self.idx] == "0":
+                self.sub_bytes_type = "len"
+                self.len_sub_bytes = int(PACKET_STRING[self.idx + 1 : self.idx + 16], 2)
+                debug(self.len_sub_bytes)
+                self.idx += 16
+                target = self.idx + self.len_sub_bytes
+                while self.idx < target:
+                    p = Packet(self.idx)
+                    self.idx = p.idx
+                    self.version_total += p.version_total
+            else:
+                self.sub_bytes_type = "num"
+                self.num_sub_packets = int(
+                    PACKET_STRING[self.idx + 1 : self.idx + 12], 2
+                )
+                self.idx += 12
+                for n in range(self.num_sub_packets):
+                    p = Packet(self.idx)
+                    self.version_total += p.version_total
+                    self.idx = p.idx
 
 
 def get_bits():
     input_data = common.read_string_file()
     for line in input_data:
+        debug(line.strip())
         yield ("".join(HEX_MAPPINGS[c] for c in line.strip()))
     return ""
 
@@ -58,15 +86,13 @@ def process():
         global PACKET_STRING
         PACKET_STRING = bits
         p = Packet(0)
-        debug(f"{p.version=}  {p.type=}")
-        if p.literal:
-            debug(f"{p.literal=}  {p.value=}")
-        debug("")
+        debug(p.version_total)
+    return p
 
 
 def part_1():
-    process()
-    return ""
+    p = process()
+    return p.version_total
 
 
 def part_2():
