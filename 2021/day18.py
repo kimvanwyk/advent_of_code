@@ -27,28 +27,33 @@ def process():
 
 
 def reduce(vals):
-    brace_count = 0
-    explode = False
-    for (n, c) in enumerate(vals):
-        # debug((n, c, vals))
-        if c == "[":
-            brace_count += 1
-        elif c == "]":
-            brace_count -= 1
-        elif type(c) is int:
-            if (brace_count >= 5) and not explode:
-                explode = True
-                anchor = n
-                # search left for a number to add to
-                for i in range(n - 1, -1, -1):
-                    if type(vals[i]) is int:
-                        vals[i] += vals[n]
-                        break
-                for i in range(n + 3, len(vals)):
-                    if type(vals[i]) is int:
-                        vals[i] += vals[n + 2]
-                        break
-                vals[n - 1 : n + 4] = [0]
+    while True:
+        explode = False
+        split = False
+        brace_count = 0
+        for (n, c) in enumerate(vals):
+            # debug((n, c, vals))
+            if c == "[":
+                brace_count += 1
+            elif c == "]":
+                brace_count -= 1
+            elif type(c) is int:
+                if (brace_count >= 5) and not explode:
+                    explode = True
+                    anchor = n
+                    # search left for a number to add to
+                    for i in range(n - 1, -1, -1):
+                        if type(vals[i]) is int:
+                            vals[i] += vals[n]
+                            break
+                    for i in range(n + 3, len(vals)):
+                        if type(vals[i]) is int:
+                            vals[i] += vals[n + 2]
+                            break
+                    vals[n - 1 : n + 4] = [0]
+
+        if not any((explode, split)):
+            break
 
 
 def part_1():
