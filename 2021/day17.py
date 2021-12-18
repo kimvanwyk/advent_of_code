@@ -63,8 +63,8 @@ def part_1():
     debug((xlims, ylims))
     probe = Probe(xlims, ylims)
 
-    for xd in range(xlims[1]):
-        for yd in range(ylims[1], xlims[1]):
+    for xd in range(1, xlims[1] * 4):
+        for yd in range(ylims[1], xlims[1] * 4):
             probe.test_path(xd, yd)
     return probe.maxy
 
