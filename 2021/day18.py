@@ -7,7 +7,7 @@ def process():
     input_data = common.read_string_file()
     for vals in input_data:
         if vals[0] != "#":
-            debug(vals)
+            # debug(vals)
             ipt = []
             n = 0
             while n < len(vals):
@@ -58,13 +58,13 @@ def reduce(vals):
                             vals[i] += vals[n + 2]
                             break
                     vals[n - 1 : n + 4] = [0]
-                    debug(("explode", n, c, "".join([str(c) for c in vals])))
+                    # debug(("explode", n, c, "".join([str(c) for c in vals])))
                     break
 
                 if c >= 10 and not split:
                     split = True
                     vals[n : n + 1] = ["[", c // 2, ",", (c // 2) + (c % 2), "]"]
-                    debug(("split", n, c, "".join([str(v) for v in vals])))
+                    # debug(("split", n, c, "".join([str(v) for v in vals])))
                     break
 
         if not any((explode, split)):
@@ -72,13 +72,19 @@ def reduce(vals):
 
 
 def part_1():
-    for ipt in process():
-        addition(ipt, ["[", 1, ",", 1, "]"])
-        debug("".join([str(c) for c in ipt]))
-        reduce(ipt)
-        debug("".join([str(c) for c in ipt]))
-        debug("")
-        # return process()
+    ipt = None
+    for addee in process():
+        if ipt is None:
+            ipt = addee
+        else:
+            addition(ipt, addee)
+            debug(f'addtion:  {"".join([str(c) for c in ipt])}')
+            reduce(ipt)
+            debug(f'reduction:  {"".join([str(c) for c in ipt])}')
+            debug("")
+    # debug("".join([str(c) for c in ipt]))
+    # debug("")
+    # return process()
     return ""
 
 
