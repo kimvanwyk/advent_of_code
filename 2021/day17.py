@@ -13,6 +13,7 @@ class Probe:
         path = (xd, yd)
         (x, y) = (0, 0)
         self.highest = 0
+        self.good_paths = 0
         result = False
         while True:
             x += xd
@@ -33,6 +34,7 @@ class Probe:
                 if (self.maxy is None) or self.highest > self.maxy:
                     self.maxy = self.highest
                     debug(f"New max: {self.maxy=}  {path=}")
+                    self.good_paths += 1
                 break
         return result
 
@@ -54,18 +56,25 @@ def part_1_known_paths(probe):
             debug(f"Failure with {ipt}")
 
 
-def part_1():
+def get_probe():
     (minx, maxx, miny, maxy) = process()
     xlims = [minx, maxx]
     xlims.sort()
     ylims = [miny, maxy]
     ylims.sort(reverse=True)
     debug((xlims, ylims))
-    probe = Probe(xlims, ylims)
+    return Probe(xlims, ylims)
 
-    for xd in range(1, xlims[1] * 4):
-        for yd in range(ylims[1], xlims[1] * 4):
+
+def process_paths(probe):
+    for xd in range(1, probe.xlims[1] * 4):
+        for yd in range(probe.ylims[1], probe.xlims[1] * 4):
             probe.test_path(xd, yd)
+
+
+def part_1():
+    probe = get_probe()
+    process_paths(probe)
     return probe.maxy
 
 
