@@ -72,22 +72,50 @@ def reduce(vals):
             break
 
 
+def magnitude(vals):
+    while len(vals) > 1:
+        for n in range(len(vals)):
+            if vals[n] == "]":
+                # debug((vals, n, vals[n - 4 :]))
+                vals[n - 4 : n + 1] = [vals[n - 3] * 3 + vals[n - 1] * 2]
+                break
+    return vals[0]
+
+
 def part_1():
-    ipt = None
-    for addee in process():
-        if ipt is None:
-            ipt = addee
-        else:
-            addition(ipt, addee)
-            debug(f'addition:  {"".join([str(c) for c in ipt])}')
-            reduce(ipt)
-            debug(f'reduction:  {"".join([str(c) for c in ipt])}')
-            debug("")
-            # break
-    # debug("".join([str(c) for c in ipt]))
-    # debug("")
-    # return process()
-    return ""
+    if 0:
+        # usewith parts 1 - 3
+        ipt = None
+        for addee in process():
+            if ipt is None:
+                ipt = addee
+            else:
+                addition(ipt, addee)
+                # debug(f'addition:  {"".join([str(c) for c in ipt])}')
+                reduce(ipt)
+                # debug(f'reduction:  {"".join([str(c) for c in ipt])}')
+                # debug("")
+                # break
+        debug("".join([str(c) for c in ipt]))
+        debug("")
+    if 0:
+        # use wth part 4
+        for ipt in process():
+            debug(ipt)
+            debug(magnitude(ipt[:]))
+    if 1:
+        # use with p5 and prod
+        ipt = None
+        for addee in process():
+            if ipt is None:
+                ipt = addee
+            else:
+                addition(ipt, addee)
+                reduce(ipt)
+        debug(("sum", "".join([str(c) for c in ipt])))
+        magn = magnitude(ipt)
+        debug(("magn", magn))
+    return magn
 
 
 def part_2():
