@@ -6,24 +6,32 @@ import settings
 def process():
     input_data = common.read_string_file()
     for vals in input_data:
-        debug(vals)
-        ipt = []
-        n = 0
-        while n < len(vals):
-            if vals[n] in ("[", "]", ","):
-                ipt.append(vals[n])
-                n += 1
-            else:
-                num = []
-                for i in range(n, len(vals)):
-                    if vals[i] in "0123456789":
-                        num.append(vals[i])
-                    else:
-                        break
-                if num:
-                    ipt.append(int("".join(num)))
-                n = i
-        yield ipt
+        if vals[0] != "#":
+            debug(vals)
+            ipt = []
+            n = 0
+            while n < len(vals):
+                if vals[n] in ("[", "]", ","):
+                    ipt.append(vals[n])
+                    n += 1
+                else:
+                    num = []
+                    for i in range(n, len(vals)):
+                        if vals[i] in "0123456789":
+                            num.append(vals[i])
+                        else:
+                            break
+                    if num:
+                        ipt.append(int("".join(num)))
+                    n = i
+            yield ipt
+
+
+def addition(vals, addor):
+    vals.insert(0, "[")
+    vals.append(",")
+    vals.extend(addor)
+    vals.append("]")
 
 
 def reduce(vals):
@@ -65,6 +73,8 @@ def reduce(vals):
 
 def part_1():
     for ipt in process():
+        addition(ipt, ["[", 1, ",", 1, "]"])
+        debug("".join([str(c) for c in ipt]))
         reduce(ipt)
         debug("".join([str(c) for c in ipt]))
         debug("")
