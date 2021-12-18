@@ -36,8 +36,6 @@ def addition(vals, addor):
 
 def reduce(vals):
     while True:
-        explode = False
-        split = False
         brace_count = 0
         for (n, c) in enumerate(vals):
             if c == "[":
@@ -45,8 +43,7 @@ def reduce(vals):
             elif c == "]":
                 brace_count -= 1
             elif type(c) is int:
-                if (brace_count >= 5) and not explode:
-                    explode = True
+                if brace_count >= 5:
                     anchor = n
                     # search left for a number to add to
                     for i in range(n - 1, -1, -1):
@@ -61,13 +58,12 @@ def reduce(vals):
                     # debug(("explode", n, c, "".join([str(c) for c in vals])))
                     break
 
-                if c >= 10 and not split:
-                    split = True
+                if c >= 10:
                     vals[n : n + 1] = ["[", c // 2, ",", (c // 2) + (c % 2), "]"]
                     # debug(("split", n, c, "".join([str(v) for v in vals])))
                     break
 
-        if not any((explode, split)):
+        else:
             break
 
 
