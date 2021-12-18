@@ -32,7 +32,6 @@ def reduce(vals):
         split = False
         brace_count = 0
         for (n, c) in enumerate(vals):
-            # debug((n, c, vals))
             if c == "[":
                 brace_count += 1
             elif c == "]":
@@ -51,6 +50,14 @@ def reduce(vals):
                             vals[i] += vals[n + 2]
                             break
                     vals[n - 1 : n + 4] = [0]
+                    debug(("explode", n, c, "".join([str(c) for c in vals])))
+                    break
+
+                if c >= 10 and not split:
+                    split = True
+                    vals[n : n + 1] = ["[", c // 2, ",", (c // 2) + (c % 2), "]"]
+                    debug(("split", n, c, "".join([str(v) for v in vals])))
+                    break
 
         if not any((explode, split)):
             break
