@@ -10,6 +10,7 @@ class Probe:
         self.maxy = None
 
     def test_path(self, xd, yd):
+        path = (xd, yd)
         (x, y) = (0, 0)
         self.highest = 0
         result = False
@@ -29,8 +30,9 @@ class Probe:
                 self.ylims[0] >= y >= self.ylims[1]
             ):
                 result = True
-                if self.maxy and self.highest > self.maxy:
+                if (self.maxy is None) or self.highest > self.maxy:
                     self.maxy = self.highest
+                    debug(f"New max: {self.maxy=}  {path=}")
                 break
         return result
 
@@ -60,8 +62,11 @@ def part_1():
     ylims.sort(reverse=True)
     debug((xlims, ylims))
     probe = Probe(xlims, ylims)
-    part_1_known_paths(probe)
-    return ""
+
+    for xd in range(xlims[1]):
+        for yd in range(ylims[1], xlims[1]):
+            probe.test_path(xd, yd)
+    return probe.maxy
 
 
 def part_2():
