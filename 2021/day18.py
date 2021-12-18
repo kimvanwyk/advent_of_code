@@ -10,10 +10,8 @@ def process():
         ipt = []
         n = 0
         while n < len(vals):
-            if vals[n] in ("[", "]"):
+            if vals[n] in ("[", "]", ","):
                 ipt.append(vals[n])
-                n += 1
-            elif vals[n] == ",":
                 n += 1
             else:
                 num = []
@@ -46,17 +44,18 @@ def reduce(vals):
                     if type(vals[i]) is int:
                         vals[i] += vals[n]
                         break
-                for i in range(n + 2, len(vals)):
+                for i in range(n + 3, len(vals)):
                     if type(vals[i]) is int:
-                        vals[i] += vals[n + 1]
+                        vals[i] += vals[n + 2]
                         break
-                vals[n - 1 : n + 3] = [0]
+                vals[n - 1 : n + 4] = [0]
 
 
 def part_1():
     for ipt in process():
         reduce(ipt)
-        debug(ipt)
+        debug("".join([str(c) for c in ipt]))
+        debug("")
         # return process()
     return ""
 
