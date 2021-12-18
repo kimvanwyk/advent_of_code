@@ -32,27 +32,30 @@ def reduce(vals):
     brace_count = 0
     explode = False
     for (n, c) in enumerate(vals):
+        # debug((n, c, vals))
         if c == "[":
             brace_count += 1
-        if c == "]":
+        elif c == "]":
             brace_count -= 1
-        if type(c) is int:
+        elif type(c) is int:
             if (brace_count >= 5) and not explode:
                 explode = True
                 anchor = n
                 # search left for a number to add to
-                for i in range(n, -1, -1):
+                for i in range(n - 1, -1, -1):
                     if type(vals[i]) is int:
-                        vals[i] += c
-            for i in range(n + 2, len(vals)):
-                if type(vals[i]) is int:
-                    vals[i] += vals[n + 2]
-        vals[n - 1 : n + 3] = [0]
+                        vals[i] += vals[n]
+                        break
+                for i in range(n + 2, len(vals)):
+                    if type(vals[i]) is int:
+                        vals[i] += vals[n + 1]
+                        break
+                vals[n - 1 : n + 3] = [0]
 
 
 def part_1():
     for ipt in process():
-        # reduce(ipt)
+        reduce(ipt)
         debug(ipt)
         # return process()
     return ""
