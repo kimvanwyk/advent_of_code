@@ -42,6 +42,16 @@ def process():
     return rets
 
 
+def part_1_known_paths(probe):
+
+    for ipt in ((7, 2), (6, 3), (9, 0), (6, 9), (17, -4)):
+        if probe.test_path(*(ipt)):
+            debug(f"Success with {ipt}")
+            debug(probe.highest)
+        else:
+            debug(f"Failure with {ipt}")
+
+
 def part_1():
     (minx, maxx, miny, maxy) = process()
     xlims = [minx, maxx]
@@ -50,13 +60,7 @@ def part_1():
     ylims.sort(reverse=True)
     debug((xlims, ylims))
     probe = Probe(xlims, ylims)
-
-    for ipt in ((7, 2), (6, 3), (9, 0), (6, 9), (17, -4)):
-        if probe.test_path(*(ipt)):
-            debug(f"Success with {ipt}")
-            debug(probe.highest)
-        else:
-            debug(f"Failure with {ipt}")
+    part_1_known_paths(probe)
     return ""
 
 
