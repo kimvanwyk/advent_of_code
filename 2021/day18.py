@@ -10,8 +10,10 @@ def process():
         ipt = []
         n = 0
         while n < len(vals):
-            if vals[n] in ("[", "]", ","):
+            if vals[n] in ("[", "]"):
                 ipt.append(vals[n])
+                n += 1
+            elif vals[n] == ",":
                 n += 1
             else:
                 num = []
@@ -26,19 +28,31 @@ def process():
         yield ipt
 
 
-# def reduce(vals):
-#     brace_count = 0
-#     for (n, c) in enumerate(vals):
-#         if c == "[":
-#             brace_count += 1
-#             if brace_count >= 5:
-#                 anchor = n
-#                 # search left for a number to add to
-#                 for i in range(n,-1,-1):
+def reduce(vals):
+    brace_count = 0
+    explode = False
+    for (n, c) in enumerate(vals):
+        if c == "[":
+            brace_count += 1
+        if c == "]":
+            brace_count -= 1
+        if type(c) is int:
+            if (brace_count >= 5) and not explode:
+                explode = True
+                anchor = n
+                # search left for a number to add to
+                for i in range(n, -1, -1):
+                    if type(vals[i]) is int:
+                        vals[i] += c
+            for i in range(n + 2, len(vals)):
+                if type(vals[i]) is int:
+                    vals[i] += vals[n + 2]
+        vals[n - 1 : n + 3] = [0]
 
 
 def part_1():
     for ipt in process():
+        # reduce(ipt)
         debug(ipt)
         # return process()
     return ""
