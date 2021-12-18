@@ -36,6 +36,7 @@ def addition(vals, addor):
 
 def reduce(vals):
     while True:
+        acted = False
         brace_count = 0
         for (n, c) in enumerate(vals):
             if c == "[":
@@ -44,6 +45,7 @@ def reduce(vals):
                 brace_count -= 1
             elif type(c) is int:
                 if brace_count >= 5:
+                    acted = True
                     anchor = n
                     # search left for a number to add to
                     for i in range(n - 1, -1, -1):
@@ -58,12 +60,15 @@ def reduce(vals):
                     # debug(("explode", n, c, "".join([str(c) for c in vals])))
                     break
 
-                if c >= 10:
+        if not acted:
+            for (n, c) in enumerate(vals):
+                if (type(c) is int) and (c >= 10):
+                    acted = True
                     vals[n : n + 1] = ["[", c // 2, ",", (c // 2) + (c % 2), "]"]
                     # debug(("split", n, c, "".join([str(v) for v in vals])))
                     break
 
-        else:
+        if not acted:
             break
 
 
@@ -74,10 +79,11 @@ def part_1():
             ipt = addee
         else:
             addition(ipt, addee)
-            debug(f'addtion:  {"".join([str(c) for c in ipt])}')
+            debug(f'addition:  {"".join([str(c) for c in ipt])}')
             reduce(ipt)
             debug(f'reduction:  {"".join([str(c) for c in ipt])}')
             debug("")
+            # break
     # debug("".join([str(c) for c in ipt]))
     # debug("")
     # return process()
