@@ -2,6 +2,8 @@ import common
 from common import debug
 import settings
 
+from itertools import permutations
+
 
 def process():
     input_data = common.read_string_file()
@@ -119,4 +121,14 @@ def part_1():
 
 
 def part_2():
-    return process()
+    # use with part 5
+    numbers = [n for n in process()]
+    max_magn = 0
+    for (n1, n2) in permutations(numbers, 2):
+        ipt = n1[:]
+        addition(ipt, n2)
+        reduce(ipt)
+        magn = magnitude(ipt)
+        if magn > max_magn:
+            max_magn = magn
+    return max_magn
