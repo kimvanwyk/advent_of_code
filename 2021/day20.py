@@ -35,25 +35,35 @@ def apply_algo(image, algo):
     return out_image
 
 
+def expand_image(image):
+    """Return a new image with 2 rows of dark pixels at the top and bottom and 2 dark pixels on either side of each row"""
+    out_image = []
+    row_len = len(image[0]) + 4
+    out_image.append([0] * row_len)
+    out_image.append([0] * row_len)
+    for row in image:
+        l = [0, 0]
+        l.extend(row)
+        l.extend([0, 0])
+        out_image.append(l)
+    out_image.append([0] * row_len)
+    out_image.append([0] * row_len)
+    return out_image
+
+
 def process():
     input_data = list(common.read_string_file())
     algo = [1 if c == "#" else 0 for c in input_data[0]]
     # debug((algo, len(algo)))
 
     # image starts on line 3
-    # add 2 dark pixels to each side of each row and 2 rows of zeroes on the top and bottom
-    row_len = len(input_data[2]) + 4
-    image = [[0] * row_len, [0] * row_len]
+    image = []
     for row in input_data[2:]:
-        l = [0, 0]
-        l.extend([1 if c == "#" else 0 for c in row])
-        l.extend([0, 0])
-        image.append(l)
-    image.append([0] * row_len)
-    image.append([0] * row_len)
+        image.append([1 if c == "#" else 0 for c in row])
+    image = expand_image(image)
     print_image(image)
-    out_image = apply_algo(image, algo)
-    print_image(out_image)
+    image = apply_algo(image, algo)
+    print_image(image)
     return ""
 
 
