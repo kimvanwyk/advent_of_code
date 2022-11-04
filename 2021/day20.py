@@ -8,6 +8,7 @@ from copy import deepcopy
 def print_image(image):
     for row in image:
         debug(" ".join(["#" if c else "." for c in row]))
+    debug("")
 
 
 def apply_algo(image, algo):
@@ -30,23 +31,21 @@ def apply_algo(image, algo):
                     ]
                 ]
             )
-            print(row, col, val, int(val, 2))
+            # debug(row, col, val, int(val, 2))
             out_image[row][col] = algo[int(val, 2)]
     return out_image
 
 
 def expand_image(image):
-    """Return a new image with 2 rows of dark pixels at the top and bottom and 2 dark pixels on either side of each row"""
+    """Return a new image with 1 row of dark pixels at the top and bottom and 1 dark pixel on either side of each row"""
     out_image = []
-    row_len = len(image[0]) + 4
-    out_image.append([0] * row_len)
+    row_len = len(image[0]) + 2
     out_image.append([0] * row_len)
     for row in image:
-        l = [0, 0]
+        l = [0]
         l.extend(row)
-        l.extend([0, 0])
+        l.append(0)
         out_image.append(l)
-    out_image.append([0] * row_len)
     out_image.append([0] * row_len)
     return out_image
 
@@ -54,17 +53,21 @@ def expand_image(image):
 def process():
     input_data = list(common.read_string_file())
     algo = [1 if c == "#" else 0 for c in input_data[0]]
-    # debug((algo, len(algo)))
+    print((algo, len(algo)))
 
     # image starts on line 3
     image = []
     for row in input_data[2:]:
         image.append([1 if c == "#" else 0 for c in row])
-    image = expand_image(image)
-    print_image(image)
-    image = apply_algo(image, algo)
-    print_image(image)
-    return ""
+    n = 0
+    # initial expansion needs to happen twice
+    while n < 2:
+        image = expand_image(image)
+        print_image(image)
+        image = apply_algo(image, algo)
+        print_image(image)
+        n += 1
+    return sum([sum(l) for l in image])
 
 
 def part_1():
