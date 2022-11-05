@@ -91,7 +91,7 @@ def apply_algo(image_dict, algo, border=0):
     return current_dict
 
 
-def process():
+def process(loops):
     input_data = list(common.read_string_file())
     algo = [1 if c == "#" else 0 for c in input_data[0]]
     # print((algo, len(algo)))
@@ -104,7 +104,7 @@ def process():
 
     border = 0
     n = 0
-    while n < 2:
+    while n < loops:
         print_image(image_dict)
         image_dict = apply_algo(image_dict, algo, border=border)
         print_image(image_dict)
@@ -115,8 +115,8 @@ def process():
 
 
 def part_1():
-    return process()
+    return process(2)
 
 
 def part_2():
-    return process()
+    return process(50)
