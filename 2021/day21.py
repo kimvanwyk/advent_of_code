@@ -4,6 +4,8 @@ import common
 from common import debug
 import settings
 
+INDICES = {0: 1, 1: 0}
+
 
 @attr.define
 class DeterministicDie:
@@ -32,6 +34,22 @@ class Player:
         self.score += self.pos
 
 
+@attr.define
+class Universe:
+    players: list
+    index: int = 0
+
+    def __attrs_post_init__(self):
+        self.index = 1
+
+    def forward(self, steps):
+        self.index = INDICES[self.index]
+        player = self.players[self.index]
+        player.forward(steps)
+        debug(f"{steps=}, {player=}")
+        return player.score >= 1000
+
+
 def process():
     input_data = common.read_string_file()
     players = [Player(int(l.split(":")[-1].strip())) for l in input_data]
@@ -39,22 +57,15 @@ def process():
     die = DeterministicDie(100)
     debug(die)
 
-    n = 0
-    player_index = 1
-    # while n < 8:
+    universe = Universe(players=players)
     while True:
-        player_index = 0 if player_index else 1
-        player = players[player_index]
         roll = sum([die.roll() for n in range(3)])
-        player.forward(roll)
-        debug(f"{roll=}, {player=}")
-        n += 1
-
-        if player.score >= 1000:
+        if universe.forward(roll):
             break
-    loser_index = 0 if player_index else 1
-    debug(f"{players[loser_index]=}, {die=}")
-    return players[loser_index].score * die.rolls
+    loser_index = INDICES[universe.index]
+    debug(f"{universe.players[loser_index]=}, {die=}")
+
+    return universe.players[loser_index].score * die.rolls
 
 
 def part_1():
