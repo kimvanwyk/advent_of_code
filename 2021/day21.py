@@ -5,6 +5,8 @@ from common import debug
 from copy import deepcopy
 import settings
 
+import itertools
+
 INDICES = {0: 1, 1: 0}
 
 
@@ -27,12 +29,17 @@ class Player:
     pos: int
     score: int = 0
 
-    def forward(self, steps):
-        self.pos += steps
-        self.pos %= 10
-        if self.pos == 0:
-            self.pos = 10
-        self.score += self.pos
+    def forward(self, steps, test=False):
+        pos = self.pos + steps
+        pos %= 10
+        if pos == 0:
+            pos = 10
+        score = self.score + pos
+        if test:
+            return score
+        self.pos = pos
+        self.score = score
+        return self.score
 
 
 @attr.define
@@ -41,17 +48,20 @@ class Universe:
     index: int = 0
     target: int = 1000
     won: bool = False
-    rolls: list = []
 
     def __attrs_post_init__(self):
         self.index = 1
 
-    def forward(self, steps):
+    def forward(self, steps, test=False):
         self.index = INDICES[self.index]
         player = self.players[self.index]
-        player.forward(steps)
-        debug(f"{steps=}, {player=}")
-        self.won = player.score >= self.target
+        score = player.forward(steps, test)
+        if test:
+            # revert index as just a test
+            self.index = INDICES[self.index]
+            return score >= self.target
+        # debug(f"{steps=}, {player=}")
+        self.won = score >= self.target
         return self.won
 
 
@@ -84,37 +94,26 @@ def part_2():
     possible_rolls = [
         sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))
     ]
+    debug(universes)
     while True:
         n += 1
-        found = False
-        # for (key, universe) in [
-        #     items for items in universes.items() if not items[-1].won
-        # ]:
-        #     found = True
-        #     del universes[key]
-        #     for roll in possible_rolls()
-        #     new_universes = {}
-        #     for roll in range(1, 4):
-        #         new = deepcopy(universe)
-        #         new.record_roll(roll)
-        #         new_universes[id(new)] = new
-
-        #     for extra_loops in range(2):
-        #         for (key, universe) in list(new_universes.items()):
-        #             del new_universes[key]
-        #             for roll in range(1, 4):
-        #                 new = deepcopy(universe)
-        #                 new.record_roll(roll)
-        #                 new_universes[id(new)] = new
-
-        #     for (key, universe) in new_universes.items():
-        #         if universe.forward():
-        #             winners[universe.index] += 1
-        #         else:
-        #             universes[key] = universe
-
-        # if not found:
-        #     print(n)
-        #     print(winners)
-        #     break
+        if not universes:
+            break
+        for (key, universe) in list(universes.items()):
+            del universes[key]
+            for roll in possible_rolls:
+                if universe.forward(roll, test=True):
+                    winners[universe.index] += 1
+                else:
+                    new = deepcopy(universe)
+                    new.forward(roll)
+                    universes[id(new)] = new
+        if n < 6:
+            debug(universes)
+            debug(len(universes))
+            debug("")
+        else:
+            break
+    print(n)
+    print(winners)
     return ""
