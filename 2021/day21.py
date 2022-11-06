@@ -46,14 +46,9 @@ class Universe:
     def __attrs_post_init__(self):
         self.index = 1
 
-    def record_roll(self, roll):
-        self.rolls.append(roll)
-
-    def forward(self):
+    def forward(self, steps):
         self.index = INDICES[self.index]
         player = self.players[self.index]
-        steps = sum(self.rolls)
-        self.rolls = []
         player.forward(steps)
         debug(f"{steps=}, {player=}")
         self.won = player.score >= self.target
@@ -73,9 +68,7 @@ def part_1():
 
     universe = Universe(players=get_players())
     while True:
-        for n in range(3):
-            universe.record_roll(die.roll())
-        if universe.forward():
+        if universe.forward(sum([die.roll() for n in range(3)])):
             break
     loser_index = INDICES[universe.index]
     debug(f"{universe.players[loser_index]=}, {die=}")
@@ -88,46 +81,40 @@ def part_2():
     universes = {id(u): u}
     winners = {0: 0, 1: 0}
     n = 0
+    possible_rolls = [
+        sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))
+    ]
     while True:
         n += 1
         found = False
-        for (key, universe) in [
-            items for items in universes.items() if not items[-1].won
-        ]:
-            found = True
-            del universes[key]
-            new_universes = {}
-            for roll in range(1, 4):
-                new = deepcopy(universe)
-                if new.forward(roll):
-                    winners[new.index] += 1
-                else:
-                    new_universes[id(new)] = new
-                debug(new)
+        # for (key, universe) in [
+        #     items for items in universes.items() if not items[-1].won
+        # ]:
+        #     found = True
+        #     del universes[key]
+        #     for roll in possible_rolls()
+        #     new_universes = {}
+        #     for roll in range(1, 4):
+        #         new = deepcopy(universe)
+        #         new.record_roll(roll)
+        #         new_universes[id(new)] = new
 
-            for (key, universe) in list(new_universes.items()):
-                del new_universes[key]
-                for roll in range(1, 4):
-                    new = deepcopy(universe)
-                    if new.forward(roll):
-                        winners[new.index] += 1
-                    else:
-                        new_universes[id(new)] = new
-                        debug(new)
+        #     for extra_loops in range(2):
+        #         for (key, universe) in list(new_universes.items()):
+        #             del new_universes[key]
+        #             for roll in range(1, 4):
+        #                 new = deepcopy(universe)
+        #                 new.record_roll(roll)
+        #                 new_universes[id(new)] = new
 
-            for (key, universe) in list(new_universes.items()):
-                del new_universes[key]
-                for roll in range(1, 4):
-                    new = deepcopy(universe)
-                    if new.forward(roll):
-                        winners[new.index] += 1
-                    else:
-                        new_universes[id(new)] = new
-                        debug(new)
-            universes.update(new_universes)
+        #     for (key, universe) in new_universes.items():
+        #         if universe.forward():
+        #             winners[universe.index] += 1
+        #         else:
+        #             universes[key] = universe
 
-        if not found:
-            print(n)
-            print(winners)
-            break
+        # if not found:
+        #     print(n)
+        #     print(winners)
+        #     break
     return ""
