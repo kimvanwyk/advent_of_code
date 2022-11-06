@@ -50,14 +50,18 @@ class Universe:
         return player.score >= 1000
 
 
-def process():
+def get_players():
     input_data = common.read_string_file()
     players = [Player(int(l.split(":")[-1].strip())) for l in input_data]
     debug(players)
+    return players
+
+
+def part_1():
     die = DeterministicDie(100)
     debug(die)
 
-    universe = Universe(players=players)
+    universe = Universe(players=get_players())
     while True:
         roll = sum([die.roll() for n in range(3)])
         if universe.forward(roll):
@@ -66,10 +70,6 @@ def process():
     debug(f"{universe.players[loser_index]=}, {die=}")
 
     return universe.players[loser_index].score * die.rolls
-
-
-def part_1():
-    return process()
 
 
 def part_2():
