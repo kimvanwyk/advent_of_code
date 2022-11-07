@@ -5,14 +5,18 @@ from common import debug
 from copy import copy, deepcopy
 import settings
 
+from collections import Counter, defaultdict, namedtuple
 import itertools
-import sys
 
 INDICES = {0: 1, 1: 0}
 
-POSSIBLE_ROLLS = [sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))]
+POSSIBLE_ROLLS = Counter(
+    [sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))]
+)
+
 
 WINNERS = {0: 0, 1: 0}
+UNIVERSE_KEY = namedtuple("UniverseKey", "p1pos p2pos p1score p2score player won")
 
 
 @attr.define
@@ -34,7 +38,7 @@ class Player:
     pos: int
     score: int = 0
 
-    def forward(self, steps, test=False):
+    def forward(self, steps):
         pos = self.pos + steps
         pos %= 10
         if pos == 0:
@@ -57,23 +61,18 @@ class Universe:
     def __attrs_post_init__(self):
         self.index = 1
 
-    def forward(self, steps, test=False):
-        self.index = INDICES[self.index]
+    def forward(self, steps):
         player = self.players[self.index]
-        score = player.forward(steps, test)
-        if test:
-            # revert index as just a test
-            self.index = INDICES[self.index]
-            return score >= self.target
+        self.score = player.forward(steps)
         # debug(f"{steps=}, {player=}")
         self.won = score >= self.target
+        self.index = INDICES[self.index]
         return self.won
 
 
 def get_players():
     input_data = common.read_string_file()
     players = tuple([Player(int(l.split(":")[-1].strip())) for l in input_data])
-    debug(players)
     return players
 
 
@@ -91,34 +90,42 @@ def part_1():
     return universe.players[loser_index].score * die.rolls
 
 
-def roll(p1_pos, p1_score, p2_pos, p2_score, index):
-    if index:
-        pos = p2_pos
-        score = p2_score
-    else:
-        pos = p1_pos
-        score = p1_score
-    for steps in POSSIBLE_ROLLS:
-        pos += steps
-        pos %= 10
-        if pos == 0:
-            pos = 10
-        score += pos
-        if score >= 21:
-            WINNERS[index] += 1
-        else:
-            if index:
-                p2_pos = pos
-                p2_score = score
-            else:
-                p1_pos = pos
-                p1_score = score
-            roll(p1_pos, p1_score, p2_pos, p2_score, INDICES[index])
+def advance_universe(universe, steps):
+    pos = [universe.p1pos, universe.p2pos]
+    score = [universe.p1score, universe.p2score]
+    idx = universe.player
+    pos[idx] += steps
+    pos[idx] %= 10
+    if pos[idx] == 0:
+        pos[idx] = 10
+    score[idx] += pos[idx]
+    return UNIVERSE_KEY(*pos, *score, INDICES[idx], score[idx] >= 21)
 
 
+# Borrowing the memoisation algorithm from
+# https://www.reddit.com/r/adventofcode/comments/wsw4e6/comment/il477vn/?utm_source=share&utm_medium=web2x&context=3
 def part_2():
     players = get_players()
-    sys.setrecursionlimit(50000)
-    roll(players[0].pos, 0, players[1].pos, 0, 0)
-    print(WINNERS)
-    return ""
+    universes = {
+        UNIVERSE_KEY(
+            players[0].pos, players[1].pos, players[0].score, players[1].score, 0, 0
+        ): 1
+    }
+    debug(POSSIBLE_ROLLS)
+    debug(universes)
+    found = True
+    while found:
+        new_universes = defaultdict(int)
+        found = False
+        for (current_universe, num_universes) in universes.items():
+            found = True
+            for (steps, num_affected) in POSSIBLE_ROLLS.items():
+                new_universe = advance_universe(current_universe, steps)
+                # debug((steps, new_universe))
+                if new_universe.won:
+                    WINNERS[current_universe.player] += num_universes * num_affected
+                else:
+                    new_universes[new_universe] += num_universes * num_affected
+        universes = new_universes
+    debug(WINNERS)
+    return max(WINNERS.values())
