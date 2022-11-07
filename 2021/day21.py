@@ -2,12 +2,17 @@ import attr
 
 import common
 from common import debug
-from copy import deepcopy
+from copy import copy, deepcopy
 import settings
 
 import itertools
+import sys
 
 INDICES = {0: 1, 1: 0}
+
+POSSIBLE_ROLLS = [sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))]
+
+WINNERS = {0: 0, 1: 0}
 
 
 @attr.define
@@ -86,34 +91,34 @@ def part_1():
     return universe.players[loser_index].score * die.rolls
 
 
-def part_2():
-    u = Universe(players=get_players(), target=21)
-    universes = {id(u): u}
-    winners = {0: 0, 1: 0}
-    n = 0
-    possible_rolls = [
-        sum(i) for i in (itertools.product((1, 2, 3), (1, 2, 3), (1, 2, 3)))
-    ]
-    debug(universes)
-    while True:
-        n += 1
-        if not universes:
-            break
-        for (key, universe) in list(universes.items()):
-            del universes[key]
-            for roll in possible_rolls:
-                if universe.forward(roll, test=True):
-                    winners[universe.index] += 1
-                else:
-                    new = deepcopy(universe)
-                    new.forward(roll)
-                    universes[id(new)] = new
-        if n < 6:
-            debug(universes)
-            debug(len(universes))
-            debug("")
+def roll(p1_pos, p1_score, p2_pos, p2_score, index):
+    if index:
+        pos = p2_pos
+        score = p2_score
+    else:
+        pos = p1_pos
+        score = p1_score
+    for steps in POSSIBLE_ROLLS:
+        pos += steps
+        pos %= 10
+        if pos == 0:
+            pos = 10
+        score += pos
+        if score >= 21:
+            WINNERS[index] += 1
         else:
-            break
-    print(n)
-    print(winners)
+            if index:
+                p2_pos = pos
+                p2_score = score
+            else:
+                p1_pos = pos
+                p1_score = score
+            roll(p1_pos, p1_score, p2_pos, p2_score, INDICES[index])
+
+
+def part_2():
+    players = get_players()
+    sys.setrecursionlimit(50000)
+    roll(players[0].pos, 0, players[1].pos, 0, 0)
+    print(WINNERS)
     return ""
