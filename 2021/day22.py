@@ -5,12 +5,38 @@ import settings
 import attr
 
 
+class BadRange(Exception):
+    pass
+
+
 @attr.define
 class Instruction:
-    x_range: tuple
-    y_range: tuple
-    z_range: tuple
     position: bool
+    x_range: tuple = ()
+    y_range: tuple = ()
+    z_range: tuple = ()
+
+    def set_range(self, axis, minval, maxval):
+        if minval > 50:
+            raise BadRange
+        if maxval < -50:
+            raise BadRange
+        if minval < -50:
+            minval = -50
+        if maxval > 50:
+            maxval = 50
+        if (maxval - minval) < 0:
+            raise BadRange
+        setattr(self, f"{axis}_range", range(minval, maxval + 1))
+
+    def get_points(self):
+        points = {}
+        for x in self.x_range:
+            for y in self.y_range:
+                for z in self.z_range:
+                    points[(x, y, z)] = self.position
+        debug(points)
+        return points
 
 
 def process():
@@ -19,15 +45,23 @@ def process():
     for l in input_data:
         (position, range_strings) = l.split(" ")
         ranges = []
-        for range_string in range_strings.split(","):
-            ranges.append(tuple([int(i) for i in range_string[2:].split("..")]))
-        yield Instruction(*ranges, position == "on")
+        inst = Instruction(position == "on")
+        try:
+            for range_string in range_strings.split(","):
+                inst.set_range(
+                    range_string[0], *[int(i) for i in range_string[2:].split("..")]
+                )
+        except BadRange:
+            continue
+        yield inst
 
 
 def part_1():
+    points = {}
     for instruction in process():
         debug(instruction)
-    return ""
+        points.update(instruction.get_points())
+    return sum([p for p in points.values() if p])
 
 
 def part_2():
