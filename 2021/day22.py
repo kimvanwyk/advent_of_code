@@ -16,17 +16,18 @@ class Instruction:
     y_range: tuple = ()
     z_range: tuple = ()
 
-    def set_range(self, axis, minval, maxval):
-        if minval > 50:
-            raise BadRange
-        if maxval < -50:
-            raise BadRange
-        if minval < -50:
-            minval = -50
-        if maxval > 50:
-            maxval = 50
-        if (maxval - minval) < 0:
-            raise BadRange
+    def set_range(self, axis, minval, maxval, limit=None):
+        if limit is not None:
+            if minval > limit:
+                raise BadRange
+            if maxval < -limit:
+                raise BadRange
+            if minval < -limit:
+                minval = -limit
+            if maxval > limit:
+                maxval = limit
+            if (maxval - minval) < 0:
+                raise BadRange
         setattr(self, f"{axis}_range", range(minval, maxval + 1))
 
     def get_points(self):
@@ -49,7 +50,9 @@ def process():
         try:
             for range_string in range_strings.split(","):
                 inst.set_range(
-                    range_string[0], *[int(i) for i in range_string[2:].split("..")]
+                    range_string[0],
+                    *[int(i) for i in range_string[2:].split("..")],
+                    limit=50,
                 )
         except BadRange:
             continue
