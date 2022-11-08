@@ -40,7 +40,7 @@ class Instruction:
         return points
 
 
-def process():
+def get_instructions(limit):
     input_data = common.read_string_file()
 
     for l in input_data:
@@ -52,19 +52,23 @@ def process():
                 inst.set_range(
                     range_string[0],
                     *[int(i) for i in range_string[2:].split("..")],
-                    limit=50,
+                    limit=limit,
                 )
         except BadRange:
             continue
         yield inst
 
 
-def part_1():
+def process(limit):
     points = {}
-    for instruction in process():
+    for instruction in get_instructions(limit):
         debug(instruction)
         points.update(instruction.get_points())
     return sum([p for p in points.values() if p])
+
+
+def part_1():
+    return process(limit=50)
 
 
 def part_2():
