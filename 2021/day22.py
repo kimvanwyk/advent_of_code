@@ -16,16 +16,16 @@ class Instruction:
     y_range: tuple = ()
     z_range: tuple = ()
 
-    def set_range(self, axis, minval, maxval, limit=None):
-        if limit is not None:
-            if minval > limit:
+    def set_range(self, axis, minval, maxval, limits=None):
+        if limits is not None:
+            if minval > limits[1]:
                 raise BadRange
-            if maxval < -limit:
+            if maxval < limits[0]:
                 raise BadRange
-            if minval < -limit:
-                minval = -limit
-            if maxval > limit:
-                maxval = limit
+            if minval < limits[0]:
+                minval = limits[0]
+            if maxval > limits[1]:
+                maxval = limits[1]
             if (maxval - minval) < 0:
                 raise BadRange
         setattr(self, f"{axis}_range", range(minval, maxval + 1))
@@ -40,8 +40,11 @@ class Instruction:
         return points
 
 
-def get_instructions(limit):
+def get_instructions(limit=50):
     input_data = common.read_string_file()
+
+    if limit is not None:
+        limits = (-50, 50)
 
     for l in input_data:
         (position, range_strings) = l.split(" ")
@@ -52,7 +55,7 @@ def get_instructions(limit):
                 inst.set_range(
                     range_string[0],
                     *[int(i) for i in range_string[2:].split("..")],
-                    limit=limit,
+                    limits=limits,
                 )
         except BadRange:
             continue
