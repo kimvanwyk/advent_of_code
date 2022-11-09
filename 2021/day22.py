@@ -55,10 +55,18 @@ def get_instructions(limit=50):
             ]
     if limit is not None:
         limits_list = ((-50, 50), (-50, 50), (-50, 50))
-    # else:
-    #     for (pos, ranges) in zip(positions, ranges_list):
+    else:
+        limits_list = [list(v) for v in ranges_list[0].values()]
+        for (pos, ranges) in zip(positions, ranges_list):
+            if pos:
+                for (n, v) in enumerate(ranges.values()):
+                    if v[0] < limits_list[n][0]:
+                        limits_list[n][0] = v[0]
+                    if v[1] > limits_list[n][1]:
+                        limits_list[n][1] = v[1]
 
     debug(ranges_list)
+    debug(limits_list)
     for (pos, ranges) in zip(positions, ranges_list):
         inst = Instruction(pos)
         try:
