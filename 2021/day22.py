@@ -43,20 +43,29 @@ class Instruction:
 def get_instructions(limit=50):
     input_data = common.read_string_file()
 
-    if limit is not None:
-        limits = (-50, 50)
-
+    positions = []
+    ranges_list = []
     for l in input_data:
         (position, range_strings) = l.split(" ")
-        ranges = []
-        inst = Instruction(position == "on")
+        ranges_list.append({})
+        positions.append(position == "on")
+        for range_string in range_strings.split(","):
+            ranges_list[-1][range_string[0]] = [
+                int(i) for i in range_string[2:].split("..")
+            ]
+    if limit is not None:
+        limits_list = ((-50, 50), (-50, 50), (-50, 50))
+    # else:
+    #     for (pos, ranges) in zip(positions, ranges_list):
+
+    debug(ranges_list)
+    for (pos, ranges) in zip(positions, ranges_list):
+        inst = Instruction(pos)
         try:
-            for range_string in range_strings.split(","):
-                inst.set_range(
-                    range_string[0],
-                    *[int(i) for i in range_string[2:].split("..")],
-                    limits=limits,
-                )
+            [
+                inst.set_range(k, *v, limits)
+                for (limits, (k, v)) in zip(limits_list, ranges.items())
+            ]
         except BadRange:
             continue
         yield inst
