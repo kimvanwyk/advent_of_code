@@ -22,4 +22,6 @@ def part_1():
 
 
 def part_2():
-    return process()
+    entries = process()
+    entries.sort(reverse=True)
+    return sum(entries[:3])
