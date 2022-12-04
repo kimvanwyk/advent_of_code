@@ -22,4 +22,13 @@ def part_1():
 
 
 def part_2():
-    return process()
+    pairs = []
+    subsets = 0
+    for line in process():
+        pairs = [[int(i) for i in rng.split("-")] for rng in line.split(",")]
+        pairs.sort()
+        if pairs[0][1] >= pairs[1][0]:
+            subsets += 1
+            debug(pairs)
+            debug(f"found match.")
+    return subsets
