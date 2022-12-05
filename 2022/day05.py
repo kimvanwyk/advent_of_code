@@ -56,4 +56,9 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (stacks, moves) = process()
+    for move in moves:
+        stacks[move.target].extend(stacks[move.src][-move.move :])
+        del stacks[move.src][-move.move :]
+    debug(stacks)
+    return "".join([stack[-1] for stack in stacks.values()])
