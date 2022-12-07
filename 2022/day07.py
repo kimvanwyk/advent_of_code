@@ -72,4 +72,15 @@ def part_1():
 
 
 def part_2():
-    return process()
+    objects = process()
+    required = 30000000 - (70000000 - objects[""].size(objects))
+    debug(f"{required=}")
+    smallest = 30000000
+    for d in objects.values():
+        size = d.size(objects)
+        # debug(f"{d=} {size=} {size > required=}")
+        if size > required:
+            debug(f"{d=} {size=} {smallest=} {size<smallest=}")
+            if size < smallest:
+                smallest = size
+    return smallest
