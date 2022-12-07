@@ -23,6 +23,11 @@ class Dir:
         self.files = []
         self.dirs = []
 
+    def size(self, objects):
+        return sum([objects[name].size(objects) for name in self.dirs]) + sum(
+            f.size for f in self.files
+        )
+
 
 def process():
     current_path = []
@@ -52,14 +57,18 @@ def process():
                     )
                 else:
                     objects[current_path_str].files.append(File(name, int(t)))
-        print(line, current_path, current_path_str)
     return objects
 
 
 def part_1():
     objects = process()
     debug(objects)
-    return ""
+    total = 0
+    for name in objects:
+        size = objects[name].size(objects)
+        if size <= 100000:
+            total += size
+    return total
 
 
 def part_2():
