@@ -35,4 +35,25 @@ def part_1():
 
 
 def part_2():
-    return process()
+    array = process()
+    best_site = 0
+    for ((row, col), tree) in np.ndenumerate(array):
+        score = 1
+        if 0 < row < array.shape[0] - 1 and 0 < col < array.shape[1] - 1:
+            for (name, ri, ci, flip) in (
+                ("top", slice(None, row), col, np.flip),
+                ("bottom", slice(row + 1, None), col, lambda x: x),
+                ("left", row, slice(None, col), np.flip),
+                ("right", row, slice(col + 1, None), lambda x: x),
+            ):
+                debug(f"{name=}, {flip(array[ri, ci])=}, {tree=}")
+                for (n, height) in enumerate(flip(array[ri, ci]), 1):
+                    debug(f"{n=} {height=}")
+                    if height >= tree:
+                        break
+                score *= n
+                debug(f"{score=}")
+            debug("")
+        if score > best_site:
+            best_site = score
+    return best_site
