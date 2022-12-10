@@ -27,4 +27,22 @@ def part_1():
 
 
 def part_2():
-    return process()
+    x = 1
+    n = 1
+    total = 0
+    out = []
+    for inst in process():
+        if (n - 1) % 40 == 0:
+            out.append([])
+            pos = 0
+        if pos in (x - 1, x, x + 1):
+            out[-1].append("#")
+        else:
+            out[-1].append(".")
+        if inst is not None:
+            x += inst
+        n += 1
+        pos += 1
+    for row in out:
+        print("".join(row))
+    return total
