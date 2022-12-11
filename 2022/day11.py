@@ -90,11 +90,10 @@ def part_2():
     worry_amount = 1
     for monkey in monkeys.values():
         worry_amount *= monkey.test
-    debug(f"{worry_divisor=}")
     for monkey in monkeys.values():
         monkey.worry_operator = operator.mod
         monkey.worry_amount = worry_amount
-    monkeys = process_monkeys(monkeys, 1)
+    monkeys = process_monkeys(monkeys, 10000)
     inspections = [m.inspections for m in monkeys.values()]
     inspections.sort(reverse=True)
     debug(monkeys)
