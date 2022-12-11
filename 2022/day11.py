@@ -2,6 +2,7 @@ import common
 from common import debug
 import settings
 
+## Modulo hint from https://www.reddit.com/r/adventofcode/comments/zih7gf/2022_day_11_part_2_what_does_it_mean_find_another/
 
 from attr import define, field
 
@@ -18,7 +19,8 @@ class Monkey:
     operand: int
     test: int
     throwees: []
-    worry_divisor: int
+    worry_operator: type(operator.add) = operator.add
+    worry_amount: int = 1
     inspections: int = field(init=False)
 
     def __attrs_post_init__(self):
@@ -31,14 +33,14 @@ class Monkey:
             item = self.operator(
                 item, self.operand if self.operand is not None else item
             )
-            item = item // self.worry_divisor
+            item = self.worry_operator(item, self.worry_amount)
             yield (item, self.throwees[item % self.test == 0])
 
 
-def process(worry_divisor):
+def process():
     input_data = common.read_string_file()
     monkeys = {}
-    kargs = {"worry_divisor": worry_divisor}
+    kargs = {}
     for line in input_data:
         if "Monkey" in line:
             key = int(line.split(" ")[-1][:-1])
@@ -73,7 +75,10 @@ def process_monkeys(monkeys, rounds):
 
 
 def part_1():
-    monkeys = process(worry_divisor=3)
+    monkeys = process()
+    for monkey in monkeys.values():
+        monkey.worry_operator = operator.floordiv
+        monkey.worry_amount = 3
     monkeys = process_monkeys(monkeys, 20)
     inspections = [m.inspections for m in monkeys.values()]
     inspections.sort(reverse=True)
@@ -81,9 +86,17 @@ def part_1():
 
 
 def part_2():
-    monkeys = process(reduce_worry=False)
-    monkeys = process_monkeys(monkeys, 10000)
+    monkeys = process()
+    worry_amount = 1
+    for monkey in monkeys.values():
+        worry_amount *= monkey.test
+    debug(f"{worry_divisor=}")
+    for monkey in monkeys.values():
+        monkey.worry_operator = operator.mod
+        monkey.worry_amount = worry_amount
+    monkeys = process_monkeys(monkeys, 1)
     inspections = [m.inspections for m in monkeys.values()]
     inspections.sort(reverse=True)
+    debug(monkeys)
     debug(inspections[:3])
     return inspections[0] * inspections[1]
