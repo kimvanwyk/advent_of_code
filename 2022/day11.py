@@ -4,6 +4,8 @@ import settings
 
 
 from attr import define, field
+
+import array
 import operator
 
 OPERATORS = {"*": operator.mul, "+": operator.add}
@@ -11,33 +13,33 @@ OPERATORS = {"*": operator.mul, "+": operator.add}
 
 @define(slots=False)
 class Monkey:
-    items: []
+    items: None
     operator: type(operator.add)
     operand: int
     test: int
     throwees: []
+    reduce_worry: bool
     inspections: int = field(init=False)
 
     def __attrs_post_init__(self):
         self.inspections = 0
 
     def process(self):
-        actions = []
         while self.items:
             self.inspections += 1
             item = self.items.pop(0)
             item = self.operator(
                 item, self.operand if self.operand is not None else item
             )
-            item = item // 3
-            actions.append((item, self.throwees[item % self.test == 0]))
-        return actions
+            if self.reduce_worry:
+                item = item // 3
+            yield (item, self.throwees[item % self.test == 0])
 
 
-def process():
+def process(reduce_worry):
     input_data = common.read_string_file()
     monkeys = {}
-    kargs = {}
+    kargs = {"reduce_worry": reduce_worry}
     for line in input_data:
         if "Monkey" in line:
             key = int(line.split(" ")[-1][:-1])
@@ -57,23 +59,32 @@ def process():
         if "If false" in line:
             kargs["throwees"][False] = int(line.split("monkey ")[-1])
             monkeys[key] = Monkey(**kargs)
-    debug(monkeys)
+    return monkeys
+
+
+def process_monkeys(monkeys, rounds):
+    round = 0
+    while round < rounds:
+        for monkey in monkeys.values():
+            for action in monkey.process():
+                monkeys[action[1]].items.append(action[0])
+        # debug(f"{round=}  {monkeys=}")
+        round += 1
     return monkeys
 
 
 def part_1():
-    monkeys = process()
-    for round in range(20):
-        for monkey in monkeys.values():
-            actions = monkey.process()
-            debug(f"{actions=}")
-            for action in actions:
-                monkeys[action[1]].items.append(action[0])
-        debug(monkeys)
+    monkeys = process(reduce_worry=True)
+    monkeys = process_monkeys(monkeys, 20)
     inspections = [m.inspections for m in monkeys.values()]
     inspections.sort(reverse=True)
     return inspections[0] * inspections[1]
 
 
 def part_2():
-    return process()
+    monkeys = process(reduce_worry=False)
+    monkeys = process_monkeys(monkeys, 800)
+    inspections = [m.inspections for m in monkeys.values()]
+    inspections.sort(reverse=True)
+    debug(inspections[:3])
+    return inspections[0] * inspections[1]
