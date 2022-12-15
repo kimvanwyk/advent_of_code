@@ -33,9 +33,9 @@ def process():
 
 
 # BFS hint from https://medium.com/geekculture/breadth-first-search-in-python-822fb97e0775
-def shortest_path():
+def shortest_path(start):
     visited = []
-    queue = [[START]]
+    queue = [[start]]
 
     while queue:
         path = queue.pop(0)
@@ -54,20 +54,19 @@ def shortest_path():
                 queue.append(new_path)
 
                 if option == END:
-                    return new_path
+                    return len(new_path)
 
             visited.append(point)
 
-    return []
+    return 0
 
 
 def part_1():
     process()
     debug(f"{START=}  {END=}  {POINTS=}")
-    path = shortest_path()
-    debug(path)
+    path_len = shortest_path(START)
     # number of steps is 1 less than items in path
-    return len(path) - 1
+    return path_len - 1
 
 
 def part_2():
