@@ -32,38 +32,42 @@ def process():
             POINTS[(x, y)] = val
 
 
-def process_point(current_point, steps, seen):
-    steps += 1
-    # seen = tuple(list(seen) + [(current_point)])
-    seen.append(current_point)
-    if current_point == END:
-        debug(f"Found end. {seen=}  {steps=}")
-        return steps
-    curval = POINTS[current_point]
-    (x, y) = current_point
-    valid_directions = []
-    for (dx, dy) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
-        new = (x + dx, y + dy)
-        # debug(
-        #     f"{str(inspect.currentframe())[10:18]} {current_point=} {curval=} {new=} {steps=}"
-        # )
-        if (
-            (new in POINTS)
-            and (ord(POINTS[new]) < (ord(curval) + 2))
-            and (new not in seen)
-        ):
-            # debug(
-            #     f"processing {curval=} {POINTS[new]=}  {ord(POINTS[new])}= {ord(curval)=}"
-            # )
-            yield from process_point(new, steps, seen)
-    return
+# BFS hint from https://medium.com/geekculture/breadth-first-search-in-python-822fb97e0775
+def shortest_path():
+    visited = []
+    queue = [[START]]
+
+    while queue:
+        path = queue.pop(0)
+        point = path[-1]
+        (x, y) = point
+        curval = POINTS[point]
+        if point not in visited:
+            options = []
+            for (dx, dy) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                new = (x + dx, y + dy)
+                if (new in POINTS) and (ord(POINTS[new]) < (ord(curval) + 2)):
+                    options.append(new)
+            for option in options:
+                new_path = list(path)
+                new_path.append(option)
+                queue.append(new_path)
+
+                if option == END:
+                    return new_path
+
+            visited.append(point)
+
+    return []
 
 
 def part_1():
     process()
     debug(f"{START=}  {END=}  {POINTS=}")
-    print(list(process_point((0, 0), 0, [])))
-    return LOWEST_STEPS or -1
+    path = shortest_path()
+    debug(path)
+    # number of steps is 1 less than items in path
+    return len(path) - 1
 
 
 def part_2():
