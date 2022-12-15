@@ -4,15 +4,11 @@ import settings
 
 import inspect
 
-START = None
-END = None
-POINTS = {}
-LOWEST_STEPS = None
-
 
 def process():
-    global POINTS
     y = -1
+    points = {}
+    lowest = []
     input_data = common.read_string_file()
     for line in input_data:
         x = -1
@@ -21,19 +17,21 @@ def process():
             x += 1
             if c == "S":
                 val = "a"
-                global START
-                START = (x, y)
+                start = (x, y)
             elif c == "E":
                 val = "z"
                 global END
-                END = (x, y)
+                end = (x, y)
             else:
                 val = c
-            POINTS[(x, y)] = val
+            points[(x, y)] = val
+            if val == "a":
+                lowest.append((x, y))
+    return (start, end, points, lowest)
 
 
 # BFS hint from https://medium.com/geekculture/breadth-first-search-in-python-822fb97e0775
-def shortest_path(start):
+def shortest_path(start, end, points):
     visited = []
     queue = [[start]]
 
@@ -41,19 +39,19 @@ def shortest_path(start):
         path = queue.pop(0)
         point = path[-1]
         (x, y) = point
-        curval = POINTS[point]
+        curval = points[point]
         if point not in visited:
             options = []
             for (dx, dy) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                 new = (x + dx, y + dy)
-                if (new in POINTS) and (ord(POINTS[new]) < (ord(curval) + 2)):
+                if (new in points) and (ord(points[new]) < (ord(curval) + 2)):
                     options.append(new)
             for option in options:
                 new_path = list(path)
                 new_path.append(option)
                 queue.append(new_path)
 
-                if option == END:
+                if option == end:
                     return len(new_path)
 
             visited.append(point)
@@ -62,9 +60,9 @@ def shortest_path(start):
 
 
 def part_1():
-    process()
-    debug(f"{START=}  {END=}  {POINTS=}")
-    path_len = shortest_path(START)
+    (start, end, points, lowest) = process()
+    debug(f"{start=}  {end=}  {points=}")
+    path_len = shortest_path(start, end, points)
     # number of steps is 1 less than items in path
     return path_len - 1
 
