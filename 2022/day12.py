@@ -36,26 +36,32 @@ def process_point(current_point, steps, seen):
     steps += 1
     seen.append(current_point)
     if current_point == END:
+        debug(f"Found end. {seen=}  {steps=}")
         global LOWEST_STEPS
         if (LOWEST_STEPS is None) or (LOWEST_STEPS > steps):
             LOWEST_STEPS = steps
         return
     curval = POINTS[current_point]
     (x, y) = current_point
+    valid_directions = []
     for (dx, dy) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
         new = (x + dx, y + dy)
-        debug(
-            f"{str(inspect.currentframe())[10:18]} {current_point=} {curval=} {new=} {steps=}"
-        )
+        # debug(
+        #     f"{str(inspect.currentframe())[10:18]} {current_point=} {curval=} {new=} {steps=}"
+        # )
         if (
             (new in POINTS)
             and (ord(POINTS[new]) < (ord(curval) + 2))
             and (new not in seen)
         ):
-            debug(
-                f"processing {curval=} {POINTS[new]=}  {ord(POINTS[new])}= {ord(curval)=}"
-            )
-            process_point(new, steps, seen)
+            # debug(
+            #     f"processing {curval=} {POINTS[new]=}  {ord(POINTS[new])}= {ord(curval)=}"
+            # )
+            valid_directions.append(new)
+        if not valid_directions:
+            return
+        for vd in valid_directions:
+            process_point(vd, steps, seen)
     return
 
 
@@ -63,7 +69,7 @@ def part_1():
     process()
     debug(f"{START=}  {END=}  {POINTS=}")
     process_point((0, 0), 0, [])
-    return LOWEST_STEPS
+    return LOWEST_STEPS or -1
 
 
 def part_2():
