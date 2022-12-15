@@ -34,13 +34,11 @@ def process():
 
 def process_point(current_point, steps, seen):
     steps += 1
+    # seen = tuple(list(seen) + [(current_point)])
     seen.append(current_point)
     if current_point == END:
         debug(f"Found end. {seen=}  {steps=}")
-        global LOWEST_STEPS
-        if (LOWEST_STEPS is None) or (LOWEST_STEPS > steps):
-            LOWEST_STEPS = steps
-        return
+        return steps
     curval = POINTS[current_point]
     (x, y) = current_point
     valid_directions = []
@@ -57,18 +55,14 @@ def process_point(current_point, steps, seen):
             # debug(
             #     f"processing {curval=} {POINTS[new]=}  {ord(POINTS[new])}= {ord(curval)=}"
             # )
-            valid_directions.append(new)
-        if not valid_directions:
-            return
-        for vd in valid_directions:
-            process_point(vd, steps, seen)
+            yield from process_point(new, steps, seen)
     return
 
 
 def part_1():
     process()
     debug(f"{START=}  {END=}  {POINTS=}")
-    process_point((0, 0), 0, [])
+    print(list(process_point((0, 0), 0, [])))
     return LOWEST_STEPS or -1
 
 
