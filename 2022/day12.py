@@ -31,9 +31,11 @@ def process():
 
 # BFS hint from https://medium.com/geekculture/breadth-first-search-in-python-822fb97e0775
 # Adjusted to help with part 2 by going from end to start
-def shortest_path(start, end, points, break_on_lowest=False):
+# - advice taken from https://medium.com/@datasciencedisciple/advent-of-code-2022-day-12-335dd851e795
+def shortest_path(start, end, points):
     visited = []
     queue = [[end]]
+    a_path_lens = []
 
     while queue:
         path = queue.pop(0)
@@ -51,18 +53,21 @@ def shortest_path(start, end, points, break_on_lowest=False):
                 new_path.append(option)
                 queue.append(new_path)
 
+                if points[option] == "a":
+                    a_path_lens.append(len(new_path))
+
                 if option == start:
-                    return len(new_path)
+                    return (len(new_path), a_path_lens)
 
             visited.append(point)
 
-    return 0
+    return (0, [])
 
 
 def part_1():
     (start, end, points, lowest) = process()
     debug(f"{start=}  {end=}  {points=}")
-    path_len = shortest_path(start, end, points)
+    (path_len, a_path_lens) = shortest_path(start, end, points)
     # number of steps is 1 less than items in path
     return path_len - 1
 
@@ -70,10 +75,6 @@ def part_1():
 def part_2():
     (start, end, points, lowest) = process()
     debug(f"{start=}  {end=}  {points=}  {lowest=}")
-    shortest = None
-    for low in lowest:
-        path_len = shortest_path(low, end, points, break_on_lowest=True)
-        # number of steps is 1 less than items in path
-        if (path_len is not None) and (shortest is None or (path_len - 1) < shortest):
-            shortest = path_len - 1
-    return shortest if shortest is not None else "None"
+    (path_len, a_path_lens) = shortest_path(start, end, points)
+    # number of steps is 1 less than items in path
+    return min(a_path_lens) - 1
