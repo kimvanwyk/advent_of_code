@@ -20,7 +20,6 @@ def process():
                 start = (x, y)
             elif c == "E":
                 val = "z"
-                global END
                 end = (x, y)
             else:
                 val = c
@@ -31,9 +30,10 @@ def process():
 
 
 # BFS hint from https://medium.com/geekculture/breadth-first-search-in-python-822fb97e0775
-def shortest_path(start, end, points):
+# Adjusted to help with part 2 by going from end to start
+def shortest_path(start, end, points, break_on_lowest=False):
     visited = []
-    queue = [[start]]
+    queue = [[end]]
 
     while queue:
         path = queue.pop(0)
@@ -44,14 +44,14 @@ def shortest_path(start, end, points):
             options = []
             for (dx, dy) in ((-1, 0), (1, 0), (0, -1), (0, 1)):
                 new = (x + dx, y + dy)
-                if (new in points) and (ord(points[new]) < (ord(curval) + 2)):
+                if (new in points) and (ord(points[new]) > (ord(curval) - 2)):
                     options.append(new)
             for option in options:
                 new_path = list(path)
                 new_path.append(option)
                 queue.append(new_path)
 
-                if option == end:
+                if option == start:
                     return len(new_path)
 
             visited.append(point)
@@ -68,4 +68,12 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (start, end, points, lowest) = process()
+    debug(f"{start=}  {end=}  {points=}  {lowest=}")
+    shortest = None
+    for low in lowest:
+        path_len = shortest_path(low, end, points, break_on_lowest=True)
+        # number of steps is 1 less than items in path
+        if (path_len is not None) and (shortest is None or (path_len - 1) < shortest):
+            shortest = path_len - 1
+    return shortest if shortest is not None else "None"
