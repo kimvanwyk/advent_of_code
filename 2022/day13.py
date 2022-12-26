@@ -27,53 +27,64 @@ def is_list(obj):
 
 
 def compare_lists(left, right):
-    debug(f"{left=} {right=}")
+    debug(f"{left=}")
+    debug(f"{right=}")
     result = NO_RESULT
     for (l, r) in zip_longest(left, right, fillvalue=None):
-        # debug(f"{l=} {r=}")
-        if not is_list(l) and not is_list(r):
+        debug(f"{l=}")
+        debug(f"{r=}")
+        if l is None:
+            # left side of list out of items
+            debug("l out of items, CORRECT")
+            result = CORRECT
+        elif r is None:
+            # right side of list out of items
+            debug("r out of items, INCORRECT")
+            result = INCORRECT
+        elif not is_list(l) and not is_list(r):
             # 2 ints, compare
-            if l is None:
-                # left side of list out of items
-                result = CORRECT
-            elif r is None:
-                # right side of list out of items
-                result = INCORRECT
-            elif l == r:
+            if l == r:
                 continue
             elif l < r:
+                debug("l < r, CORRECT")
                 result = CORRECT
             elif r < l:
+                debug("l > r, INCORRECT")
                 result = INCORRECT
-            if result != NO_RESULT:
-                break
+        if result != NO_RESULT:
+            return result
 
         if not is_list(l):
             l = [l]
         if not is_list(r):
             r = [r]
+        debug(f"{l=}")
+        debug(f"{r=}")
 
         if len(r) > 0 and len(l) == 0:
             result = CORRECT
+            debug("l empty, CORRECT")
         elif len(l) > 0 and len(r) == 0:
+            debug("r empty, INCORRECT")
             result = INCORRECT
         else:
             result = compare_lists(l, r)
 
         if result != NO_RESULT:
-            break
+            return result
     return result
 
 
 def part_1():
-    correct_sum = 0
+    indices = []
     for (n, pair) in enumerate(process(), 1):
         result = compare_lists(*pair)
         debug(f"{n=} {result=}")
         debug("")
         if result == CORRECT:
-            correct_sum += n
-    return correct_sum
+            indices.append(n)
+    print(indices)
+    return sum(indices)
 
 
 def part_2():
