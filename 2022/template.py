@@ -2,6 +2,8 @@ import common
 from common import debug
 import settings
 
+from rich import print
+
 
 def process():
     input_data = common.read_string_file()
