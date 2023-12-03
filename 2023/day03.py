@@ -2,9 +2,18 @@ import common
 from common import debug
 import settings
 
+from attrs import define
 from rich import print
 
 from collections import defaultdict
+
+
+@define
+class Val:
+    val: int = 0
+
+    def __add__(self, a):
+        return self.val + a.val
 
 
 def process():
@@ -29,7 +38,7 @@ def process():
 
     for (col, row), val in int_origins.items():
         s = "".join(val)
-        i = int(s)
+        i = Val(int(s))
         for x in range(col, col + len(s)):
             d[(x, row)] = i
         int_origins[(col, row)] = i
@@ -44,7 +53,7 @@ def part_1():
     for (col, row), val in int_origins.items():
         # check surrounding values
         xmin = col - 1
-        xmax = col + len(str(val))
+        xmax = col + len(str(val.val))
         ymin = row - 1
         ymax = row + 1
         found = False
@@ -52,42 +61,37 @@ def part_1():
             if found:
                 break
             for x in range(xmin, xmax + 1):
-                # debug((x, y, d.get((x, y))))
                 if (x, y) in d:
-                    if type(d[x, y]) is not int:
+                    # if type(d[x, y]) is not type(Val()):
+                    if not isinstance(d[x, y], type(Val())):
                         found = True
                         break
         if found:
             adjacents.append(val)
-    # debug(adjacents)
-    return sum(adjacents)
+    debug(adjacents)
+    return sum([a.val for a in adjacents])
 
 
 def part_2():
-    d = {}
-    row = -1
-    coord = None
-    for line in process():
-        row += 1
-        in_num = False
-        if coord:
-            d[coord] = int("".join(d[coord]))
-            coord = None
-            in_num = False
-        for col, c in enumerate(line):
-            if c in "0123456789":
-                if not in_num:
-                    coord = (row, col)
-                    in_num = True
-                    d[coord] = [c]
-                else:
-                    d[coord].append(c)
-            else:
-                if coord:
-                    d[coord] = int("".join(d[coord]))
-                    coord = None
-                in_num = False
-                if c != ".":
-                    d[(row, col)] = c
+    (int_origins, d) = process()
     debug(d)
-    adjacents = []
+    gear_sum = 0
+    for (col, row), val in d.items():
+        if val == "*":
+            adjacents = []
+            brk = False
+            debug((col, row, val))
+            for y in range(row - 1, row + 2):
+                if brk:
+                    break
+                for x in range(col - 1, col + 2):
+                    if ((x, y) in d) and (type(d[x, y]) is int):
+                        adjacents.append(d[x, y])
+                        if len(adjacents) > 2:
+                            brk = True
+                            break
+            debug((brk, adjacents))
+            if not brk and len(adjacents) == 2:
+                debug((x, y, adjacents))
+                gear_sum += adjacents[0] * adjacents[1]
+    return gear_sum
