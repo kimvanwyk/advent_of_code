@@ -21,6 +21,16 @@ class Handful:
                 return False
         return True
 
+    def set_max(self, other):
+        for attr in P1_LIMITS:
+            o = getattr(other, attr)
+            if getattr(self, attr) < o:
+                setattr(self, attr, o)
+
+    @property
+    def power(self):
+        return self.red * self.green * self.blue
+
 
 def process():
     for line in common.read_string_file():
@@ -46,4 +56,11 @@ def part_1():
 
 
 def part_2():
-    return process()
+    power_sum = 0
+    for gid, games in process():
+        maxes = Handful()
+        for handful in games:
+            maxes.set_max(handful)
+        debug((gid, maxes))
+        power_sum += maxes.power
+    return power_sum
