@@ -78,20 +78,22 @@ def part_2():
     gear_sum = 0
     for (col, row), val in d.items():
         if val == "*":
-            adjacents = []
+            adjacents = defaultdict(list)
             brk = False
             debug((col, row, val))
             for y in range(row - 1, row + 2):
                 if brk:
                     break
                 for x in range(col - 1, col + 2):
-                    if ((x, y) in d) and (type(d[x, y]) is int):
-                        adjacents.append(d[x, y])
+                    if ((x, y) in d) and isinstance(d[x, y], type(Val())):
+                        adjacents[id(d[x, y])] = d[x, y]
                         if len(adjacents) > 2:
                             brk = True
                             break
             debug((brk, adjacents))
-            if not brk and len(adjacents) == 2:
+            if len(adjacents) == 2:
                 debug((x, y, adjacents))
-                gear_sum += adjacents[0] * adjacents[1]
+                vals = [v.val for v in adjacents.values()]
+                debug(vals)
+                gear_sum += vals[0] * vals[1]
     return gear_sum
