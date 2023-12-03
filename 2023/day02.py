@@ -38,10 +38,11 @@ def process():
 
 
 def part_1():
-    gids = 0
+    gid_sum = 0
     for gid, games in process():
-        pass
-    return ""
+        if all(g.p1_valid for g in games):
+            gid_sum += gid
+    return gid_sum
 
 
 def part_2():
