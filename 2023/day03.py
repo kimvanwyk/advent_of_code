@@ -8,16 +8,11 @@ from collections import defaultdict
 
 
 def process():
-    for line in common.read_string_file():
-        yield line
-
-
-def part_1():
     d = {}
     row = -1
     coord = None
     int_origins = defaultdict(list)
-    for line in process():
+    for line in common.read_string_file():
         row += 1
         in_num = False
         coord = None
@@ -40,6 +35,11 @@ def part_1():
         int_origins[(col, row)] = i
     debug(int_origins)
     debug(d)
+    return (int_origins, d)
+
+
+def part_1():
+    (int_origins, d) = process()
     adjacents = []
     for (col, row), val in int_origins.items():
         # check surrounding values
