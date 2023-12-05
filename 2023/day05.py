@@ -16,30 +16,35 @@ def process():
                 maps[map_name] = {}
             else:
                 (dst_start, src_start, rng) = [int(c) for c in l.split(" ")]
-                for src, dst in zip(
-                    range(src_start, src_start + rng), range(dst_start, dst_start + rng)
-                ):
-                    maps[map_name][src] = dst
+                maps[map_name][(src_start, src_start + rng - 1)] = dst_start
     return seeds, maps
+
+
+def get_dest_from_dict(d: dict, src: int):
+    for (src_start, src_end), dst_start in d.items():
+        if src_start <= src <= src_end:
+            return dst_start + (src - src_start)
+    return src
 
 
 def part_1():
     (seeds, maps) = process()
     debug(seeds)
-    # debug(maps)
+    debug(maps)
     min_loc = 1000000000
     for seed in seeds:
-        soil = maps["seed-to-soil"].get(seed, seed)
-        fertilizer = maps["soil-to-fertilizer"].get(soil, soil)
-        water = maps["fertilizer-to-water"].get(fertilizer, fertilizer)
-        light = maps["water-to-light"].get(water, water)
-        temperature = maps["light-to-temperature"].get(light, light)
-        humidity = maps["temperature-to-humidity"].get(temperature, temperature)
-        location = maps["humidity-to-location"].get(humidity, humidity)
+        soil = get_dest_from_dict(maps["seed-to-soil"], seed)
+        fertilizer = get_dest_from_dict(maps["soil-to-fertilizer"], soil)
+        water = get_dest_from_dict(maps["fertilizer-to-water"], fertilizer)
+        light = get_dest_from_dict(maps["water-to-light"], water)
+        temperature = get_dest_from_dict(maps["light-to-temperature"], light)
+        humidity = get_dest_from_dict(maps["temperature-to-humidity"], temperature)
+        location = get_dest_from_dict(maps["humidity-to-location"], humidity)
         if location < min_loc:
             min_loc = location
         debug((soil, fertilizer, water, light, temperature, humidity, location))
     return min_loc
+    return ""
 
 
 def part_2():
