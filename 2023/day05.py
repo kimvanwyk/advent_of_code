@@ -27,25 +27,61 @@ def get_dest_from_dict(d: dict, src: int):
     return src
 
 
+def process_chain(maps: list, seed: int):
+    soil = get_dest_from_dict(maps["seed-to-soil"], seed)
+    fertilizer = get_dest_from_dict(maps["soil-to-fertilizer"], soil)
+    water = get_dest_from_dict(maps["fertilizer-to-water"], fertilizer)
+    light = get_dest_from_dict(maps["water-to-light"], water)
+    temperature = get_dest_from_dict(maps["light-to-temperature"], light)
+    humidity = get_dest_from_dict(maps["temperature-to-humidity"], temperature)
+    location = get_dest_from_dict(maps["humidity-to-location"], humidity)
+    # debug((soil, fertilizer, water, light, temperature, humidity, location))
+    return (soil, fertilizer, water, light, temperature, humidity, location)
+
+
 def part_1():
     (seeds, maps) = process()
     debug(seeds)
     debug(maps)
     min_loc = 1000000000
     for seed in seeds:
-        soil = get_dest_from_dict(maps["seed-to-soil"], seed)
-        fertilizer = get_dest_from_dict(maps["soil-to-fertilizer"], soil)
-        water = get_dest_from_dict(maps["fertilizer-to-water"], fertilizer)
-        light = get_dest_from_dict(maps["water-to-light"], water)
-        temperature = get_dest_from_dict(maps["light-to-temperature"], light)
-        humidity = get_dest_from_dict(maps["temperature-to-humidity"], temperature)
-        location = get_dest_from_dict(maps["humidity-to-location"], humidity)
+        (
+            soil,
+            fertilizer,
+            water,
+            light,
+            temperature,
+            humidity,
+            location,
+        ) = process_chain(maps, seed)
         if location < min_loc:
             min_loc = location
-        debug((soil, fertilizer, water, light, temperature, humidity, location))
+        # debug((soil, fertilizer, water, light, temperature, humidity, location))
     return min_loc
-    return ""
 
 
 def part_2():
-    return process()
+    (seed_nums, maps) = process()
+    min_loc = 100000000000000
+    seen = {}
+    for n in range(0, len(seed_nums), 2):
+        seed = seed_nums[n]
+        while seed < (seed_nums[n] + seed_nums[n + 1]):
+            if seed in seen:
+                continue
+            seen[seed] = 1
+            (
+                soil,
+                fertilizer,
+                water,
+                light,
+                temperature,
+                humidity,
+                location,
+            ) = process_chain(maps, seed)
+            if location < min_loc:
+                min_loc = location
+            # debug((soil, fertilizer, water, light, temperature, humidity, location))
+            seed += 1
+            print(seed)
+    return min_loc
