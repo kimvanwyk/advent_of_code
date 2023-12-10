@@ -141,12 +141,8 @@ def part_2():
     debug(seed_ranges)
     debug(maps)
     debug("")
-    min_loc = 100000000000000
-    for start, length in maps["location"].keys():
-        for location in range(start, start + length):
-            if check_location(maps, seed_ranges, location) and location < min_loc:
-                min_loc = location
-    for location in range(min_loc, -1, -1):
-        if check_location(maps, seed_ranges, location) and location < min_loc:
-            min_loc = location
-    return min_loc
+    location = 0
+    while True:
+        if check_location(maps, seed_ranges, location):
+            return location
+        location += 1
