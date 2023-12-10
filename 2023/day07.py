@@ -7,7 +7,7 @@ from rich import print
 
 from collections import Counter
 
-ORDER = {
+ORDER_P1 = {
     "A": 13,
     "K": 12,
     "Q": 11,
@@ -22,6 +22,21 @@ ORDER = {
     "3": 2,
     "2": 1,
 }
+ORDER_P2 = {
+    "A": 13,
+    "K": 12,
+    "Q": 11,
+    "T": 10,
+    "9": 9,
+    "8": 8,
+    "7": 7,
+    "6": 6,
+    "5": 5,
+    "4": 4,
+    "3": 3,
+    "2": 2,
+    "J": 1,
+}
 
 TYPES = {7: "five", 6: "four", 5: "full", 4: "three", 3: "two", 2: "one", 1: "high"}
 
@@ -35,8 +50,6 @@ class Hand:
 
     def __attrs_post_init__(self):
         self.cards = [c for c in self.hand]
-        self.sorted = self.cards[:]
-        self.sorted.sort(key=lambda h: ORDER[h], reverse=True)
 
     @property
     def typ(self):
@@ -67,12 +80,10 @@ def part_1():
     cards = []
     for hand, bid in process():
         h = Hand(hand, bid)
-        t = h.typ
         cards.append(h)
-        debug((h, h.sorted, t, TYPES[t], bid))
-        debug((h.typ, *[ORDER[c] for c in h.cards]))
+        debug((h.typ, *[ORDER_P1[c] for c in h.cards]))
     cards.sort(
-        key=lambda h: (h.typ, [ORDER[c] for c in h.cards]),
+        key=lambda h: (h.typ, [ORDER_P1[c] for c in h.cards]),
     )
     debug(cards)
     mult = 0
