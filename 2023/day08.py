@@ -24,15 +24,16 @@ def process():
 
 def part_1():
     (directions, node_map) = process()
-    current = "AAA"
+    currents = ["AAA"]
     n = 0
     done = False
     while not done:
         for d in directions:
             n += 1
-            debug((n, d, current))
-            current = node_map[current][DIR_INDEX[d]]
-            if current == "ZZZ":
+            debug((n, d, currents))
+            for i, current in enumerate(currents):
+                currents[i] = node_map[current][DIR_INDEX[d]]
+            if all(current[-1] == "Z" for current in currents):
                 done = True
                 break
     return n
