@@ -1,8 +1,11 @@
+import math
+
 import common
 from common import debug
 import settings
 
 from rich import print
+
 
 DIR_INDEX = {"L": 0, "R": 1}
 
@@ -22,23 +25,36 @@ def process(currents=None):
     if currents is None:
         currents = {node: node for node in node_map.keys() if node[-1] == "A"}
     debug(currents)
-    n = 0
-    done = False
-    while not done:
-        for d in directions:
-            n += 1
-            debug((n, d, currents))
-            for start, current in currents.items():
-                currents[start] = node_map[current][d]
-            if all(current[-1] == "Z" for current in currents.values()):
-                done = True
-                break
-    return n
+    steps = []
+    for start in currents:
+        dn = 0
+        steps.append([])
+        rounds = 3
+        current = start
+        while rounds:
+            done = False
+            n = 0
+            while not done:
+                current = node_map[current][directions[dn]]
+                debug(current)
+                dn += 1
+                if dn >= len(directions):
+                    dn = 0
+                n += 1
+                if current[-1] == "Z":
+                    steps[-1].append(n)
+                    rounds -= 1
+                    done = True
+    debug(steps)
+    return steps
 
 
 def part_1():
-    return process(["AAA"])
+    steps = process(["AAA"])
+    return steps[0][0]
 
 
 def part_2():
-    return process()
+    steps = process()
+    print(steps)
+    return math.lcm(*[s[0] for s in steps])
