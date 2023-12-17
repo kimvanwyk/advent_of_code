@@ -61,14 +61,14 @@ def part_1():
     for (x, y), val in points.items():
         if val == "S":
             (start_x, start_y) = (x, y)
-            pipe.append("S")
+            point = (start_x, start_y)
+            pipe.append(point)
             break
     direction = None
-    point = (start_x, start_y)
     while True:
         (point, direction) = find_connection(points, point, direction)
         val = points[point]
-        pipe.append(val)
+        pipe.append(point)
         if val == "S":
             break
     debug((start_x, start_y))
