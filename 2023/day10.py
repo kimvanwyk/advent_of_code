@@ -55,8 +55,7 @@ def find_connection(points, start_point, from_dir=None):
     return None
 
 
-def part_1():
-    points = process()
+def build_pipe(points):
     pipe = []
     for (x, y), val in points.items():
         if val == "S":
@@ -72,9 +71,37 @@ def part_1():
         if val == "S":
             break
     debug((start_x, start_y))
-    debug(pipe)
+    debug(f"{pipe=}")
+    return pipe
+
+
+def part_1():
+    points = process()
+    pipe = build_pipe(points)
     return (len(pipe[:-1]) // 2) + (len(pipe[:-1]) % 2)
 
 
+# Excellent guidanc eto the shoelace and Pick's theorems here: https://www.reddit.com/r/adventofcode/comments/18f1sgh/2023_day_10_part_2_advise_on_part_2/
+def picks_shoelace(points):
+    num_boundary_points = len(points) - 1
+    debug(f"{points=}")
+    debug(f"{num_boundary_points=}")
+
+    # shoeloace theorem to get integer area inside polygon
+    mult = []
+    for n in range(0, len(points) - 1):
+        mult.append(
+            (points[n][0] * points[n + 1][1]) - (points[n][1] * points[n + 1][0])
+        )
+    debug(f"{mult=}")
+    area = abs(sum(mult)) / 2.0
+    debug(f"{area=}")
+    # picks theorem to get num points enclosed
+    num_points = area - (num_boundary_points / 2) + 1
+    return num_points
+
+
 def part_2():
-    return process()
+    pipe = build_pipe(process())
+    return picks_shoelace(pipe)
+    # return shoelace([(1, 6), (3, 1), (7, 2), (4, 4), (8, 5)])
