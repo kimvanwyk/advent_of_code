@@ -7,44 +7,51 @@ from rich import print
 import itertools
 
 
-def process():
-    grid = []
-    for l in common.read_string_file():
-        grid.append([c for c in l])
-    debug(grid)
-    n = 0
-    while True:
-        if n >= len(grid[0]):
-            break
-        if all([row[n] == "." for row in grid]):
-            # add column
-            for row in grid:
-                row.insert(n, ".")
-            n += 1
-        n += 1
-
-    n = 0
-    while True:
-        if n >= len(grid):
-            break
-        if all([c == "." for c in grid[n]]):
-            grid.insert(n, ["."] * len(grid[0]))
-            n += 1
-        n += 1
-    debug(grid)
-
+def process(width):
     d = {}
-    for y in range(len(grid)):
-        for x in range(len(grid[y])):
-            if grid[y][x] == "#":
+    for y, l in enumerate(common.read_string_file()):
+        for x, c in enumerate(l):
+            if c == "#":
                 d[(x, y)] = "#"
-
-    return d
-
-
-def part_1():
-    d = process()
     debug(d)
+
+    max_col = len(l)
+    max_row = y + 1
+    debug((max_col, max_row))
+
+    # sweep columns
+    n = 0
+    while True:
+        if n >= max_col:
+            break
+        if n not in [x for (x, y) in d.keys()]:
+            # new column, expand by width
+            keys = list(d.keys())
+            for x, y in keys:
+                if x > n:
+                    d[(x + width, y)] = "#"
+                    del d[(x, y)]
+            max_col += width
+            n += width
+        n += 1
+
+    n = 0
+    while True:
+        if n >= max_row:
+            break
+        if n not in [y for (x, y) in d.keys()]:
+            # new column, expand by width
+            keys = list(d.keys())
+            for x, y in keys:
+                if y > n:
+                    d[(x, y + width)] = "#"
+                    del d[(x, y)]
+            max_row += width
+            n += width
+        n += 1
+    debug(d)
+    debug((max_col, max_row))
+
     pairs = itertools.combinations(d.keys(), 2)
     dist = 0
     for (x1, y1), (x2, y2) in pairs:
@@ -53,5 +60,9 @@ def part_1():
     return dist
 
 
+def part_1():
+    return process(1)
+
+
 def part_2():
-    return process()
+    return process(999999)
