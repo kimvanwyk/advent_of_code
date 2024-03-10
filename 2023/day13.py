@@ -14,14 +14,14 @@ def process():
             d = {}
             row = 1
         else:
-            debug(l)
+            # debug(l)
             for col, c in enumerate(l, 1):
                 d[(col, row)] = c
             row += 1
     yield d
 
 
-def find_line(d, max_col, max_row):
+def find_line(d, max_col, max_row, skip=None):
     for line, max_direction, max_edge in (
         ("col", max_col, max_row),
         ("row", max_row, max_col),
@@ -39,17 +39,17 @@ def find_line(d, max_col, max_row):
                     else:
                         left = d[(edge, direction - c)]
                         right = d[(edge, direction + 1 + c)]
-                    debug(
-                        (
-                            direction,
-                            edge,
-                            c,
-                            (direction - c),
-                            (direction + c + 1),
-                            left,
-                            right,
-                        )
-                    )
+                    # debug(
+                    #     (
+                    #         direction,
+                    #         edge,
+                    #         c,
+                    #         (direction - c),
+                    #         (direction + c + 1),
+                    #         left,
+                    #         right,
+                    #     )
+                    # )
                     if left != right:
                         found = False
                         break
@@ -58,8 +58,9 @@ def find_line(d, max_col, max_row):
                     break
 
             if found is True:
-                return (line, direction)
-                break
+                if (skip is None) or (skip != (line, direction)):
+                    return (line, direction)
+                found = False
         if found is True:
             break
     return None
@@ -71,10 +72,11 @@ def part_1():
         max_col = max([k[0] for k in d if k[1] == 1])
         max_row = max([k[1] for k in d if k[0] == 1])
         res = find_line(d, max_col, max_row)
+        debug(f"{res=}")
         if res:
             results.append(res)
-    debug(results)
 
+    debug(results)
     result = 0
     for direction, index in results:
         result += index * (1 if direction == "col" else 100)
@@ -82,4 +84,31 @@ def part_1():
 
 
 def part_2():
-    return process()
+    results = []
+    for d in process():
+        max_col = max([k[0] for k in d if k[1] == 1])
+        max_row = max([k[1] for k in d if k[0] == 1])
+
+        skip = find_line(d, max_col, max_row)
+
+        for k in d:
+            if d[k] == "#":
+                d[k] = "."
+            else:
+                d[k] = "#"
+            res = find_line(d, max_col, max_row, skip)
+            if res is not None:
+                break
+            if d[k] == "#":
+                d[k] = "."
+            else:
+                d[k] = "#"
+
+        debug(res)
+        if res is not None:
+            results.append(res)
+    # debug(results)
+    result = 0
+    for direction, index in results:
+        result += index * (1 if direction == "col" else 100)
+    return result
