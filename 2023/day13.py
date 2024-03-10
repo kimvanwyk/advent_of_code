@@ -21,9 +21,7 @@ def process():
     yield d
 
 
-def find_line(d):
-    max_col = max([k[0] for k in d if k[1] == 1])
-    max_row = max([k[1] for k in d if k[0] == 1])
+def find_line(d, max_col, max_row):
     for line, max_direction, max_edge in (
         ("col", max_col, max_row),
         ("row", max_row, max_col),
@@ -70,9 +68,14 @@ def find_line(d):
 def part_1():
     results = []
     for d in process():
-        debug(results)
-        result = 0
-        results.append(find_line(d))
+        max_col = max([k[0] for k in d if k[1] == 1])
+        max_row = max([k[1] for k in d if k[0] == 1])
+        res = find_line(d, max_col, max_row)
+        if res:
+            results.append(res)
+    debug(results)
+
+    result = 0
     for direction, index in results:
         result += index * (1 if direction == "col" else 100)
     return result
