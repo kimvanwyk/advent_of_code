@@ -15,9 +15,9 @@ def read_string_file(fn=None):
             yield line.strip()
 
 
-def debug(message):
+def debug(*m):
     if settings.settings.debug:
-        print(message)
+        print(*m)
 
 
 def idempotent(object):

@@ -16,7 +16,7 @@ def run_day_part(day, part, test_part=None):
 if __name__ == "__main__":
     import argparse
 
-    parser = argparse.ArgumentParser("Executor for 2023 Advent of Code challenges")
+    parser = argparse.ArgumentParser("Executor for 2024 Advent of Code challenges")
     parser.add_argument(
         "day", type=int, choices=range(1, 26), help="The day to execute"
     )
