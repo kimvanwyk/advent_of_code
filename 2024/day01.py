@@ -1,3 +1,4 @@
+from collections import Counter
 import common
 from common import debug
 import settings
@@ -27,4 +28,12 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (l1, l2) = process()
+    c = Counter(l2)
+    debug(c)
+
+    sum = 0
+    for i in l1:
+        if i in c:
+            sum += i * c[i]
+    return sum
