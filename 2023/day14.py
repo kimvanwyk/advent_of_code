@@ -4,6 +4,8 @@ import settings
 
 from rich import print
 
+import copy
+
 
 def print_grid(d):
     max_col = max([k[0] for k in d if k[1] == 1])
@@ -16,7 +18,7 @@ def print_grid(d):
 
 
 def tilt(d, max_col, max_row, direction):
-    od = {}
+    od = copy.copy(d)
     match direction:
         case "north":
             primary_max = max_col
@@ -41,7 +43,7 @@ def tilt(d, max_col, max_row, direction):
     for primary in range(1, primary_max + 1):
         ls = []
         for secondary in range(1, secondary_max + 1):
-            ls.append(d[(primary, secondary) if primary_col else (secondary, primary)])
+            ls.append(od[(primary, secondary) if primary_col else (secondary, primary)])
         if rev:
             ls.reverse()
         l = "".join(ls)
@@ -57,26 +59,16 @@ def tilt(d, max_col, max_row, direction):
             l.reverse()
             sorted = "".join(l)
         for secondary, c in enumerate(sorted, 1):
-            od[(primary, secondary) if primary_col else (secondary, primary)] = c
-    print_grid(od)
-    return od
+            d[(primary, secondary) if primary_col else (secondary, primary)] = c
+    # print_grid(od)
+    return d
 
 
-def tilt_north(d, max_col, max_row):
-    od = {}
-    for col in range(1, max_col + 1):
-        l = "".join([d[(col, r)] for r in range(1, max_row + 1)])
-        # debug(l)
-        sections = []
-        for section in l.split("#"):
-            s = [c for c in section]
-            s.sort(reverse=True)
-            sections.append("".join(s))
-        sorted = "#".join(sections)
-        for r, c in enumerate(sorted, 1):
-            od[(col, r)] = c
-    print_grid(od)
-    return od
+def cycle(d, max_col, max_row):
+    for direction in ("north", "west", "south", "east"):
+        d = tilt(d, max_col, max_row, direction)
+    # print_grid(d)
+    return d
 
 
 def get_load(d, max_col, max_row):
@@ -109,7 +101,7 @@ def part_1():
     max_col = max([k[0] for k in d if k[1] == 1])
     max_row = max([k[1] for k in d if k[0] == 1])
     debug("")
-    od = tilt_north(d, max_col, max_row)
+    od = tilt(d, max_col, max_row, direction="north")
     return get_load(od, max_col, max_row)
 
 
@@ -118,8 +110,14 @@ def part_2():
     max_col = max([k[0] for k in d if k[1] == 1])
     max_row = max([k[1] for k in d if k[0] == 1])
     debug("")
-    # for direction in ("north", "south", "west"):
-    for direction in ("west", "east"):
-        od = tilt(d, max_col, max_row, direction=direction)
-        debug(get_load(od, max_col, max_row))
-    return ""
+    n = 1000000000
+    while n:
+        od = copy.copy(d)
+        d = cycle(d, max_col, max_row)
+        # debug("")
+        n -= 1
+        if d == od:
+            break
+        if n % 100000 == 0:
+            print(n)
+    return get_load(d, max_col, max_row)
