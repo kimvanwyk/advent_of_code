@@ -7,31 +7,29 @@ from rich import print
 from itertools import pairwise
 
 
-def process():
-    for l in common.read_string_file():
-        yield [int(c.strip()) for c in l.split(" ")]
-
-
-def part_1():
+def process(threshold):
     total = 0
-    for row in process():
+    for l in common.read_string_file():
+        row = [int(c.strip()) for c in l.split(" ")]
         order = None
-        success = True
+        fails = 0
         for pair in pairwise(row):
             if order is None:
                 if pair[0] == pair[1]:
-                    success = False
-                    break
+                    fails += 1
                 if pair[0] > pair[1]:
                     order = (0, 1)
                 else:
                     order = (1, 0)
             if not 0 < pair[order[0]] - pair[order[1]] < 4:
-                success = False
-                break
-        if success:
+                fails += 1
+        if fails < threshold:
             total += 1
     return total
+
+
+def part_1():
+    return process(1)
 
 
 def part_2():
