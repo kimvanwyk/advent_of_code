@@ -37,4 +37,20 @@ def part_1():
 
 
 def part_2():
-    return process(1)
+    total = 0
+    for row in process():
+        success = False
+        debug(row)
+        success = check_row(row, 1)
+        if success:
+            total += 1
+        else:
+            for n in range(len(row)):
+                r = row[:n] + row[n + 1 :]
+                debug(r)
+                success = check_row(r, 1)
+                if success:
+                    break
+            if success:
+                total += 1
+    return total
