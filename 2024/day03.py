@@ -2,7 +2,7 @@ import common
 from common import debug
 import settings
 
-from rich import print
+# from rich import print
 
 import re
 
@@ -15,13 +15,21 @@ def process():
 
 def check_lines(lines):
     total = 0
+    process = True
     for line in lines:
-        debug(line)
         for match in PATTERN.finditer(line):
-            if "mul" in match.group():
-                (left, right) = (int(i) for i in match.group()[4:-1].split(","))
-                debug(left, right)
+            m = match.group()
+            debug(m)
+            if process and ("mul" in m):
+                (left, right) = (int(i) for i in m[4:-1].split(","))
+                # debug(left, right)
                 total += left * right
+            elif "do()" in m:
+                # debug("do")
+                process = True
+            elif "don't()" in m:
+                # debug("don't")
+                process = False
     return total
 
 
@@ -30,4 +38,4 @@ def part_1():
 
 
 def part_2():
-    return process()
+    return check_lines(process())
