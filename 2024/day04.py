@@ -8,8 +8,8 @@ from rich import print
 def process(start):
     d = {}
     starts = []
-    for col, l in enumerate(common.read_string_file()):
-        for row, c in enumerate(l):
+    for row, l in enumerate(common.read_string_file()):
+        for col, c in enumerate(l):
             d[(row, col)] = c
             if c == start:
                 starts.append((row, col))
@@ -45,4 +45,24 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (d, starts) = process("A")
+    debug(starts)
+    total = 0
+    for start in starts:
+        if (
+            (
+                (d.get((start[0] - 1, start[1] - 1), None)) == "M"
+                and (d.get((start[0] + 1, start[1] + 1), None) == "S")
+            )
+            or (d.get((start[0] - 1, start[1] - 1), None)) == "S"
+            and (d.get((start[0] + 1, start[1] + 1), None) == "M")
+        ) and (
+            (
+                (d.get((start[0] + 1, start[1] - 1), None)) == "M"
+                and (d.get((start[0] - 1, start[1] + 1), None) == "S")
+            )
+            or (d.get((start[0] + 1, start[1] - 1), None)) == "S"
+            and (d.get((start[0] - 1, start[1] + 1), None) == "M")
+        ):
+            total += 1
+    return total
