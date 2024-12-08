@@ -1,3 +1,4 @@
+from attrs import define
 from rich import print
 
 import settings
@@ -22,3 +23,15 @@ def debug(*m):
 
 def idempotent(object):
     return object
+
+
+@define
+class Point:
+    x: int
+    y: int
+
+    def __add__(self, other):
+        return Point(self.x + other.x, self.y + other.y)
+
+    def __hash__(self):
+        return hash((self.x, self.y))
