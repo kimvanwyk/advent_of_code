@@ -32,8 +32,11 @@ def process_vals(operators, values):
             debug(operator_set)
             val = vals[0]
             for i, op in enumerate(operator_set, 1):
-                # debug(test_val, val, op, vals[i])
-                val = OPS[op](val, vals[i])
+                debug(test_val, val, op, vals[i])
+                if op == "|":
+                    val = int(f"{val}{vals[i]}")
+                else:
+                    val = OPS[op](val, vals[i])
                 if val > test_val:
                     break
             if val == test_val:
@@ -49,4 +52,4 @@ def part_1():
 
 
 def part_2():
-    return process()
+    return process_vals(("*", "+", "|"), process())
