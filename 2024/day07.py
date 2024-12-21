@@ -18,12 +18,14 @@ def process():
         yield (int(k), [int(c) for c in v.strip().split(" ")])
 
 
-def part_1():
+def process_vals(operators, values):
     total = 0
-    for test_val, vals in process():
+    for test_val, vals in values:
         debug((test_val, vals))
         l = len(vals) - 1
-        ops = "*" * l + "+" * l
+        ops = ""
+        for o in operators:
+            ops += o * l
         debug(f"{ops=}")
         success = False
         for operator_set in more_itertools.distinct_permutations(ops, l):
@@ -40,6 +42,10 @@ def part_1():
         if success:
             total += test_val
     return total
+
+
+def part_1():
+    return process_vals("*+", process())
 
 
 def part_2():
