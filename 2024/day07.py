@@ -45,7 +45,7 @@ def process_vals(operators, values):
 
 
 def part_1():
-    return process_vals("*+", process())
+    return process_vals(("*", "+"), process())
 
 
 def part_2():
