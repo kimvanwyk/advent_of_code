@@ -25,7 +25,7 @@ def idempotent(object):
     return object
 
 
-@define
+@define(order=True)
 class Point:
     x: int
     y: int
@@ -33,5 +33,24 @@ class Point:
     def __add__(self, other):
         return Point(self.x + other.x, self.y + other.y)
 
+    def __sub__(self, other):
+        return Point(self.x - other.x, self.y - other.y)
+
     def __hash__(self):
         return hash((self.x, self.y))
+
+    def in_bounds(self, min_point, max_point):
+        return (min_point.x <= self.x <= max_point.x) and (
+            min_point.y <= self.y <= max_point.y
+        )
+
+
+if __name__ == "__main__":
+    a = Point(5, 4)
+    b = Point(6, 6)
+    l = [(a - b), (b - a), (b - a)]
+    l.sort()
+    print(l)
+    print(a.in_bounds(Point(1, 1), Point(10, 10)))
+    c = Point(0, -1)
+    print(c.in_bounds(Point(1, 1), Point(10, 10)))
