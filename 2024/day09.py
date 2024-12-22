@@ -16,10 +16,10 @@ def process():
             if n % 2:
                 # odd number, file slot
                 if l:
-                    files[j] = {"length": l, "id": i}
+                    files[i] = {"length": l, "pos": j}
             else:
                 if l:
-                    frees[j] = {"length": l}
+                    frees[i] = {"length": l, "pos": j}
                 i += 1
             j += l
     return (files, frees, j)
@@ -27,14 +27,22 @@ def process():
 
 def part_1():
     (files, frees, max_idx) = process()
+    debug(files)
+    debug(frees)
+    d = {}
+    for k, val in files.items():
+        for j in range(val["pos"], val["pos"] + val["length"]):
+            d[j] = k
+    for k, val in frees.items():
+        for j in range(val["pos"], val["pos"] + val["length"]):
+            d[j] = "."
     j = 0
     vals = []
-    while j < max_idx:
-        if j in files:
-            vals.extend([files[j]["id"]] * files[j]["length"])
-        elif j in frees:
-            vals.extend(["."] * frees[j]["length"])
+    while True:
+        vals.append(d[j])
         j += 1
+        if j not in d:
+            break
     debug(f"{vals=}")
     while True:
         if "." not in vals:
@@ -53,4 +61,4 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (files, frees, max_idx) = process()
