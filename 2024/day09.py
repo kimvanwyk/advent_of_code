@@ -22,7 +22,7 @@ def process():
                     frees[i] = {"length": l, "pos": j}
                 i += 1
             j += l
-    return (files, frees, j)
+    return (files, frees, i)
 
 
 def part_1():
@@ -62,3 +62,23 @@ def part_1():
 
 def part_2():
     (files, frees, max_idx) = process()
+    debug(files)
+    debug(frees)
+    debug(max_idx)
+
+    for file_id in range(max_idx, 0, -1):
+        for free_id in range(0, file_id):
+            if free_id not in frees:
+                continue
+            if frees[free_id]["length"] >= files[file_id]["length"]:
+                files[file_id]["pos"] = frees[free_id]["pos"]
+                frees[free_id]["length"] -= files[file_id]["length"]
+                frees[free_id]["pos"] = frees[free_id]["pos"] + files[file_id]["length"]
+                break
+    debug(frees)
+    debug(files)
+    checksum = 0
+    for k, val in files.items():
+        for v in range(val["pos"], val["pos"] + val["length"]):
+            checksum += v * k
+    return checksum
