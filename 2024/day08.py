@@ -19,12 +19,7 @@ def process():
     return (nodes, Point(1, 1), Point(x, y))
 
 
-def part_1():
-    (nodes, min_point, max_point) = process()
-    # nodes = {"a": [Point(5, 4), Point(6, 6)]}
-    # nodes = {"a": [Point(5, 4), Point(6, 6), Point(9, 5)]}
-    # min_point = Point(1, 1)
-    # max_point = Point(10, 10)
+def find_antinodes(nodes, min_point, max_point, limit=None):
     antinodes = {}
     for frequency, points in nodes.items():
         for anchor in points:
@@ -33,11 +28,30 @@ def part_1():
                     diff = anchor - point
                     debug(f"{diff=}")
                     debug(f"{(anchor, point)=}")
-                    p = anchor + diff
-                    if p.in_bounds(min_point, max_point):
-                        antinodes[p] = 1
+                    if limit is None:
+                        antinodes[anchor] = 1
+                    p = anchor
+                    count = 0
+                    while True:
+                        count += 1
+                        p += diff
+                        if p.in_bounds(min_point, max_point):
+                            antinodes[p] = 1
+                        else:
+                            break
+                        if limit and count >= limit:
+                            break
     debug(f"{antinodes=}")
     return len(antinodes)
+
+
+def part_1():
+    (nodes, min_point, max_point) = process()
+    # nodes = {"a": [Point(5, 4), Point(6, 6)]}
+    # nodes = {"a": [Point(5, 4), Point(6, 6), Point(9, 5)]}
+    # min_point = Point(1, 1)
+    # max_point = Point(10, 10)
+    return find_antinodes(nodes, min_point, max_point, 1)
 
 
 def part_2():
@@ -45,21 +59,4 @@ def part_2():
     # nodes = {"T": [Point(1, 1), Point(4, 2), Point(2, 3)]}
     # min_point = Point(1, 1)
     # max_point = Point(10, 10)
-    antinodes = {}
-    for frequency, points in nodes.items():
-        for anchor in points:
-            for point in points:
-                if anchor != point:
-                    diff = anchor - point
-                    debug(f"{diff=}")
-                    debug(f"{(anchor, point)=}")
-                    antinodes[anchor] = 1
-                    p = anchor
-                    while True:
-                        p += diff
-                        if p.in_bounds(min_point, max_point):
-                            antinodes[p] = 1
-                        else:
-                            break
-    debug(f"{antinodes=}")
-    return len(antinodes)
+    return find_antinodes(nodes, min_point, max_point, None)
