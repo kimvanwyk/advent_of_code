@@ -41,4 +41,25 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (nodes, min_point, max_point) = process()
+    # nodes = {"T": [Point(1, 1), Point(4, 2), Point(2, 3)]}
+    # min_point = Point(1, 1)
+    # max_point = Point(10, 10)
+    antinodes = {}
+    for frequency, points in nodes.items():
+        for anchor in points:
+            for point in points:
+                if anchor != point:
+                    diff = anchor - point
+                    debug(f"{diff=}")
+                    debug(f"{(anchor, point)=}")
+                    antinodes[anchor] = 1
+                    p = anchor
+                    while True:
+                        p += diff
+                        if p.in_bounds(min_point, max_point):
+                            antinodes[p] = 1
+                        else:
+                            break
+    debug(f"{antinodes=}")
+    return len(antinodes)
