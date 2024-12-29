@@ -5,6 +5,8 @@ import settings
 from attrs import define
 from rich import print
 
+from collections import defaultdict
+
 
 def process():
     points = {}
@@ -21,7 +23,7 @@ def process():
 def process_point(point, points, min_point, max_point, found, seen):
     v = points[point]
     if v == 9:
-        seen[point] = 1
+        seen[point] += 1
         debug("found")
         debug("")
         return found + 1
@@ -40,7 +42,7 @@ def part_1():
     found = 0
     for z in zeroes:
         debug(f"{z=}")
-        seen = {}
+        seen = defaultdict(int)
         f = process_point(z, points, Point(1, 1), max_point, 0, seen)
         debug(f"found: {f}")
         debug(f"num seen: {len(seen)}")
@@ -49,4 +51,14 @@ def part_1():
 
 
 def part_2():
-    return process()
+    (zeroes, points, max_point) = process()
+    found = 0
+    for z in zeroes:
+        debug(f"{z=}")
+        seen = defaultdict(int)
+        f = process_point(z, points, Point(1, 1), max_point, 0, seen)
+        debug(f"found: {f}")
+        debug(f"num seen: {len(seen)}")
+        for n in seen.values():
+            found += n
+    return found
