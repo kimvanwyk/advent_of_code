@@ -10,12 +10,12 @@ def process():
         return l.split(" ")
 
 
-def part_1():
+def run_steps(num_steps: int):
     stones = process()
     debug(stones)
 
     steps = 0
-    while steps < 25:
+    while steps < num_steps:
         k = 0
         while k < len(stones):
             v = stones[k]
@@ -36,5 +36,9 @@ def part_1():
     return len(stones)
 
 
+def part_1():
+    return run_steps(25)
+
+
 def part_2():
-    return process()
+    return run_steps(75)
