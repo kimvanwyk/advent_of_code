@@ -4,10 +4,16 @@ import settings
 
 from rich import print
 
+import pathlib
+
 
 def process():
+    for p in pathlib(".").glob("step*.txt"):
+        p.unlink(missing_ok=True)
     for l in common.read_string_file():
-        return l.split(" ")
+        with open("step000.txt", "w") as fh:
+            for c in l.split(" "):
+                fh.write(f"{c}\n")
 
 
 def run_steps(num_steps: int):
@@ -37,7 +43,8 @@ def run_steps(num_steps: int):
 
 
 def part_1():
-    return run_steps(25)
+    process()
+    # return run_steps(25)
 
 
 def part_2():
