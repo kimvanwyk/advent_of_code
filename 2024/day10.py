@@ -19,20 +19,19 @@ def process():
 
 
 def process_point(point, points, min_point, max_point, found, seen):
+    v = points[point]
+    if v == 9:
+        seen[point] = 1
+        debug("found")
+        debug("")
+        return found + 1
     for dx, dy in ((-1, 0), (0, -1), (1, 0), (0, 1)):
         dp = point + Point(dx, dy)
         if (dp.in_bounds(min_point, max_point)) and (points[dp] != "."):
             dv = points[dp]
-            v = points[point]
             debug(f"{seen=} {found=} {dx=} {dy=} {point=} {dp=} {v=} {dv=}")
             if dv == v + 1:
-                if dv == 9:
-                    seen[dp] = 1
-                    debug("found")
-                    debug("")
-                    return found + 1
-                else:
-                    found = process_point(dp, points, min_point, max_point, found, seen)
+                found = process_point(dp, points, min_point, max_point, found, seen)
     return found
 
 
