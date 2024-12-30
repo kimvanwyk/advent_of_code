@@ -4,47 +4,48 @@ import settings
 
 from rich import print
 
-import pathlib
+from collections import defaultdict
+from pathlib import Path
 
 
 def process():
-    for p in pathlib(".").glob("step*.txt"):
-        p.unlink(missing_ok=True)
+    d = defaultdict(int)
     for l in common.read_string_file():
-        with open("step000.txt", "w") as fh:
-            for c in l.split(" "):
-                fh.write(f"{c}\n")
+        for c in l.split(" "):
+            d[c] += 1
+    debug(d)
+    return d
 
 
 def run_steps(num_steps: int):
-    stones = process()
-    debug(stones)
-
+    d = process()
     steps = 0
     while steps < num_steps:
-        k = 0
-        while k < len(stones):
-            v = stones[k]
-            if v == "0":
-                stones[k] = "1"
-            elif not len(v) % 2:
-                sp = int(len(v) / 2)
-                left = v[:sp]
-                right = v[sp::]
-                stones[k : k + 1] = (str(int(left)), str(int(right)))
-                k += 1
-            else:
-                stones[k] = str(int(v) * 2024)
-            k += 1
+        nd = defaultdict(int)
+        noughts = d["0"]
+        d["0"] = 0
+        keys = list(d.keys())
+        for k in keys:
+            v = d[k]
+            if v:
+                if not len(k) % 2:
+                    sp = int(len(k) / 2)
+                    left = str(int(k[:sp]))
+                    right = str(int(k[sp::]))
+                    nd[left] += d[k]
+                    nd[right] += d[k]
+                else:
+                    nd[str(int(k) * 2024)] += v
+        nd["1"] += noughts
         if steps < 6:
-            debug(stones)
+            debug(nd)
+        d = nd
         steps += 1
-    return len(stones)
+    return sum(nd.values())
 
 
 def part_1():
-    process()
-    # return run_steps(25)
+    return run_steps(25)
 
 
 def part_2():
