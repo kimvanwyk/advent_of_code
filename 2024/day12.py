@@ -49,12 +49,40 @@ def part_1():
         if not in_region:
             region_frequency[val] += 1
             region = f"{val}{region_frequency[val]:02}"
-            regions[region] = {"area": 0, "perims": 0}
+            regions[region] = {"area": 0, "perims": 0, "points": []}
         region_map[point] = region
         regions[region]["area"] += 1
         regions[region]["perims"] += perims
+        regions[region]["points"].append(point)
         # debug((point, val, region, regions[region]))
-    debug(regions)
+    debug([(k, v["area"], v["perims"]) for (k, v) in regions.items()])
+
+    for letter, max_num in region_frequency.items():
+        for number in range(1, max_num + 1):
+            collapsed = False
+            rn = f"{letter}{number:02}"
+            if rn in regions:
+                for other in range(1, max_num + 1):
+                    ro = f"{letter}{other:02}"
+                    debug(letter, max_num, number, other, rn, ro)
+                    if (number != other) and (ro in regions):
+                        for po in regions[ro]["points"]:
+                            for dx, dy in ((-1, 0), (0, -1), (1, 0), (0, 1)):
+                                dp = po + Point(dx, dy)
+                                if dp in regions[rn]["points"]:
+                                    # regions ajoin, move to number version
+                                    regions[rn]["points"].extend(regions[ro]["points"])
+                                    regions[rn]["area"] += regions[ro]["area"]
+                                    regions[rn]["perims"] += regions[ro]["perims"]
+                                    del regions[ro]
+                                    collapsed = True
+                                    break
+                            if collapsed:
+                                break
+                    if collapsed:
+                        break
+
+    debug([(k, v["area"], v["perims"]) for (k, v) in regions.items()])
     return
 
 
