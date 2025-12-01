@@ -83,7 +83,7 @@ def part_1():
                         break
 
     debug([(k, v["area"], v["perims"]) for (k, v) in regions.items()])
-    return
+    return sum(v["area"] * v["perims"] for v in regions.values())
 
 
 def part_2():
