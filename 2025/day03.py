@@ -43,4 +43,7 @@ def part_1():
 
 
 def part_2():
-    return process()
+    total = 0
+    for l in process():
+        total += process_bank(l, 12)
+    return total
