@@ -22,19 +22,23 @@ def nwise(iterable, n):
         yield tuple(window)
 
 
+def process_bank(bank, num_batteries):
+    best = ["0"] * num_batteries
+    # Inspired by Rodrigo's solution
+    # loop over pairs and check each digit. If a digit is higher, all the subsequent
+    # digits must be better too as the first digit is higher
+    for candidate in nwise(bank, num_batteries):
+        for idx, (best_digit, candidate_digit) in enumerate(zip(best, candidate)):
+            if best_digit < candidate_digit:
+                best[idx:] = candidate[idx:]
+    debug(best)
+    return int("".join(best))
+
+
 def part_1():
     total = 0
     for l in process():
-        best = ["0", "0"]
-        # Inspired by Rodrigo's solution
-        # loop over pairs and check each digit. If a digit is higher, all the subsequent
-        # digits must be better too as the first digit is higher
-        for candidate in nwise(l, 2):
-            for idx, (best_digit, candidate_digit) in enumerate(zip(best, candidate)):
-                if best_digit < candidate_digit:
-                    best[idx:] = candidate[idx:]
-        debug(best)
-        total += int("".join(best))
+        total += process_bank(l, 2)
     return total
 
 
