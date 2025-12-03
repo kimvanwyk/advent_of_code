@@ -4,6 +4,8 @@ import settings
 
 from rich import print
 
+from itertools import pairwise
+
 
 def process():
     for l in common.read_string_file():
@@ -13,20 +15,14 @@ def process():
 def part_1():
     total = 0
     for l in process():
-        first_highest = "0"
-        second_highest = "0"
-        first_idx = 0
-        second_idx = 0
-        for i, c in enumerate(l[:-1], 0):
-            if c > first_highest:
-                first_highest = c
-                first_idx = i
-        for i, c in enumerate(l[(first_idx + 1) :], first_idx + 1):
-            if c > second_highest:
-                second_highest = c
-                second_idx = i
-        debug(first_idx, second_idx, f"{l[first_idx]}{l[second_idx]}")
-        total += int(f"{l[first_idx]}{l[second_idx]}")
+        best = ["0", "0"]
+        for first, second in pairwise(l):
+            if first > best[0]:
+                best = [first, second]
+            elif second > best[1]:
+                best[1] = second
+        debug(best)
+        total += int("".join(best))
     return total
 
 
