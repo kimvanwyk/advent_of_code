@@ -16,11 +16,10 @@ def part_1():
     total = 0
     for l in process():
         best = ["0", "0"]
-        for first, second in pairwise(l):
-            if first > best[0]:
-                best = [first, second]
-            elif second > best[1]:
-                best[1] = second
+        for candidate in pairwise(l):
+            for idx, (best_digit, candidate_digit) in enumerate(zip(best, candidate)):
+                if best_digit < candidate_digit:
+                    best[idx:] = candidate[idx:]
         debug(best)
         total += int("".join(best))
     return total
