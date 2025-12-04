@@ -32,4 +32,16 @@ def part_1():
 
 
 def part_2():
-    return process()
+    grid = process()
+    num_removed = 0
+    while True:
+        to_remove = []
+        for point in yield_free(grid):
+            to_remove.append(point)
+        debug(to_remove, bool(to_remove))
+        for point in to_remove:
+            del grid[point]
+        num_removed += len(to_remove)
+        if not to_remove:
+            break
+    return num_removed
