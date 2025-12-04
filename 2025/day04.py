@@ -16,13 +16,18 @@ def process():
     return grid
 
 
+def yield_free(grid):
+    for current_point in grid.keys():
+        if sum((grid.get(p, 0) for p in current_point.get_neighbour_points())) < 4:
+            yield (current_point)
+
+
 def part_1():
     grid = process()
     num_free = 0
     debug(grid)
-    for current_point in grid.keys():
-        if sum((grid.get(p, 0) for p in current_point.get_neighbour_points())) < 4:
-            num_free += 1
+    for point in yield_free(grid):
+        num_free += 1
     return num_free
 
 
