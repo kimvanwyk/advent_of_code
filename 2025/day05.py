@@ -32,10 +32,23 @@ def part_1():
 
 
 def part_2():
-    processor = Processor()
-    processor.process()
     num_fresh = 0
+    processor = Processor()
+    processor.set_ranges()
     ranges = list(processor.ranges.keys())
     ranges.sort()
     debug(ranges)
+
+    (start, end) = ranges[0]
+    for range_start, range_end in ranges[1:]:
+        debug(start, end, num_fresh)
+        if range_start > end:
+            # end of a range
+            num_fresh += end - start + 1
+            (start, end) = (range_start, range_end)
+        else:
+            if range_end > end:
+                end = range_end
+        debug(start, end, num_fresh)
+    num_fresh += end - start + 1
     return num_fresh
