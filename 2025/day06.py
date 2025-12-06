@@ -23,8 +23,6 @@ class Processor:
         self.cur.execute("CREATE TABLE vals (col, value)")
         self.cur.execute("CREATE TABLE operators (col, operator)")
 
-        self.cols = defaultdict(list)
-        self.operators = {}
         for l in common.read_string_file():
             for n, m in enumerate(re.finditer("\\S+", l), 0):
                 if l[0] in ("+", "*"):
@@ -36,14 +34,19 @@ class Processor:
         self.num_cols = n + 1
 
     def process_part_2(self):
-        for l in common.read_string_file():
-            for i, c in enumerate(l, 0):
-                if c in ("+", "*"):
-                    self.operators[n] = operator.add if c == "+" else operator.mul
-                else:
-                    self.cols[i].append(c)
-            debug(self.operators)
-            debug(self.cols)
+        self.cols = defaultdict(list)
+        self.operators = {}
+        with open(settings.settings.input_file, "r") as fh:
+            for l in fh:
+                for i, c in enumerate(l, 0):
+                    if c in ("\n"):
+                        continue
+                    if l[0] in ("+", "*") and c in ("+", "*"):
+                        self.operators[i] = operator.add if c == "+" else operator.mul
+                    else:
+                        self.cols[i].append(c)
+        debug(self.operators)
+        debug(self.cols)
 
     def get_operator(self, col_num: int):
         return (
@@ -77,24 +80,16 @@ def part_1():
 
 def part_2():
     processor = Processor()
+    processor.process_part_2()
     total = 0
-    print(processor.num_cols)
-    for n in range(processor.num_cols):
-        op = processor.get_operator(n)
-        debug(n, op)
-        max_len = processor.cur.execute(
-            f"SELECT MAX(LENGTH(value)) FROM vals WHERE col = {n}"
-        ).fetchone()[0]
-        debug(max_len)
-        # result = functools.reduce(
-        #     op,
-        #     (
-        #         int(v[0])
-        #         for v in processor.cur.execute(
-        #             f"SELECT value FROM vals WHERE col = {n}"
-        #         ).fetchall()
-        #     ),
-        # )
-        # debug(result)
-        # total += result
+    for start_idx, op in processor.operators.items():
+        idx = start_idx
+        vals = []
+        while True:
+            if all((c == " " for c in processor.cols[idx])):
+                break
+            vals.append(int("".join(processor.cols[idx])))
+            idx += 1
+        debug(vals, op)
+        total += functools.reduce(op, vals)
     return total
