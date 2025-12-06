@@ -29,7 +29,7 @@ class Processor:
                         f"INSERT INTO operators VALUES ({n},'{m.group(0)}');"
                     )
                 else:
-                    self.cur.execute(f"INSERT INTO vals VALUES ({n},{m.group(0)});")
+                    self.cur.execute(f"INSERT INTO vals VALUES ({n},'{m.group(0)}');")
         self.num_cols = n + 1
 
 
@@ -50,7 +50,7 @@ def part_1():
         result = functools.reduce(
             op,
             (
-                v[0]
+                int(v[0])
                 for v in processor.cur.execute(
                     f"SELECT value FROM vals WHERE col = {n}"
                 ).fetchall()
