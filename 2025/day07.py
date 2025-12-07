@@ -4,6 +4,8 @@ import settings
 
 from rich import print
 
+from collections import defaultdict
+
 
 class Processor:
     def __init__(self):
@@ -35,19 +37,6 @@ class Processor:
                     splitters[idx] = 1
             yield splitters
 
-    def recurse_path(self, row_idx, beam_idx):
-        debug(row_idx, beam_idx, self.num_universes, self.max_row)
-        if row_idx >= self.max_row:
-            self.num_universes += 1
-            return
-        if beam_idx not in self.splitter_rows[row_idx + 1]:
-            # No spliiter on next row
-            self.recurse_path(row_idx + 1, beam_idx)
-        else:
-            # take both left and right path
-            for direction in (-1, 1):
-                self.recurse_path(row_idx + 1, beam_idx + direction)
-
 
 def part_1():
     processor = Processor()
@@ -73,14 +62,16 @@ def part_1():
 def part_2():
     processor = Processor()
     debug(processor.init_beam_idx)
-    processor.recurse_path(0, processor.init_beam_idx)
-    return processor.num_universes
-    # beam_idxs = [processor.init_beam_idx]
-    # for row_idx in range(processor.max_row):
-    #     debug(row_idx, processor.splitter_rows[row_idx])
-    #     next_beam_idxs = []
-    #     for beam_idx in beam_idxs:
-    #         if beam_idx not in processor.splitter_rows[row_idx + 1]:
-    #             next_beam_idxs.append(beam_idx)
-    #         else:
-    #             next_beam_idxs.append(beam_idx)
+    beam_idxs = {processor.init_beam_idx: 1}
+    for row_idx in range(processor.max_row):
+        debug(row_idx, processor.splitter_rows[row_idx])
+        next_beam_idxs = defaultdict(int)
+        for beam_idx, num in beam_idxs.items():
+            if beam_idx not in processor.splitter_rows[row_idx + 1]:
+                next_beam_idxs[beam_idx] += num
+            else:
+                next_beam_idxs[beam_idx - 1] += num
+                next_beam_idxs[beam_idx + 1] += num
+        beam_idxs = next_beam_idxs
+    debug(sum(beam_idxs.values()))
+    return sum(beam_idxs.values())
