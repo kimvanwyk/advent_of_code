@@ -8,11 +8,16 @@ from rich import print
 class Processor:
     def __init__(self):
         self.init_beam_idx = 0
-        for l in common.read_string_file():
+        self.splitter_rows = {}
+        for n, l in enumerate(common.read_string_file()):
+            splitters = {}
             for idx, c in enumerate(l):
                 if c == "S":
                     self.init_beam_idx = idx
-                    break
+                elif c == "^":
+                    splitters[idx] = 1
+            self.splitter_rows[n] = splitters
+        debug([sr.keys() for sr in self.splitter_rows.values()])
 
     def process(self):
         for l in common.read_string_file():
@@ -45,4 +50,5 @@ def part_1():
 
 
 def part_2():
-    return process()
+    processor = Processor()
+    debug(processor.init_beam_idx)
