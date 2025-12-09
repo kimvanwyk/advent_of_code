@@ -1,0 +1,14 @@
+[project]
+name = "2025"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+requires-python = ">=3.14"
+dependencies = [
+    "attrs>=24.2.0",
+    "black>=24.10.0",
+    "more-itertools>=10.5.0",
+    "ptpython>=3.0.29",
+    "pyperclip>=1.9.0",
+    "rich>=13.9.4",
+]
