@@ -37,7 +37,6 @@ class Processor:
         )
 
     def add_to_circuit(self, point_idxs):
-        debug(point_idxs)
         # debug(self.point_circuit_map)
         (x, y) = (point_idxs[0], point_idxs[1])
         for left, right in ((x, y), (y, x)):
@@ -57,14 +56,10 @@ class Processor:
                 else:
                     # right in different circuit, join circuits
                     right_circuit_idx = self.point_circuit_map[right]
-                    debug(left_circuit_idx)
-                    debug(right_circuit_idx)
                     for point in self.circuit_point_map[right_circuit_idx]:
-                        debug(point)
+                        # debug((point, right))
                         self.point_circuit_map[point] = left_circuit_idx
-                        if point != right:
-                            self.circuit_point_map[left_circuit_idx].append(point)
-                    debug(self.point_circuit_map)
+                        self.circuit_point_map[left_circuit_idx].append(point)
                     del self.circuit_point_map[right_circuit_idx]
                     return True
 
@@ -94,12 +89,18 @@ class Processor:
         )
 
         num_connections = 0
+        passes = 0
         while True:
             for distance in keys:
                 for point_idxs in self.distances[distance]:
-                    if self.add_to_circuit(point_idxs):
-                        num_connections += 1
+                    passes += 1
+                    debug((passes, point_idxs))
+                    # if self.add_to_circuit(point_idxs):
+                    #     num_connections += 1
+                    self.add_to_circuit(point_idxs)
+                    num_connections += 1
                     debug(self.circuit_point_map)
+                    debug(self.point_circuit_map)
                     debug()
                     if num_connections >= max_connections:
                         return
