@@ -73,7 +73,7 @@ class Processor:
         ]
         return True
 
-    def build_circuits(self, max_connections=0):
+    def build_circuits(self, max_connections=0, max_circuits=0):
         keys = list(self.distances.keys())
         keys.sort()
         debug(
@@ -94,7 +94,14 @@ class Processor:
             for distance in keys:
                 for point_idxs in self.distances[distance]:
                     passes += 1
-                    debug((passes, point_idxs))
+                    debug(
+                        (
+                            passes,
+                            point_idxs,
+                            self.points[point_idxs[0]],
+                            self.points[point_idxs[1]],
+                        )
+                    )
                     # if self.add_to_circuit(point_idxs):
                     #     num_connections += 1
                     self.add_to_circuit(point_idxs)
@@ -104,6 +111,11 @@ class Processor:
                     debug()
                     if max_connections and (num_connections >= max_connections):
                         return
+                    if max_circuits and (
+                        len(list(self.circuit_point_map.values())[0])
+                        == len(self.points)
+                    ):
+                        return point_idxs
             break
 
 
@@ -121,9 +133,7 @@ def part_1():
 def part_2():
     processor = Processor()
     processor.set_distances()
-    debug(processor.distances)
-    processor.build_circuits(1000)
-    lens = [len(l) for l in processor.circuit_point_map.values()]
-    lens.sort()
-    debug(lens)
-    return lens[-3] * lens[-2] * lens[-1]
+    point_idxs = processor.build_circuits(max_circuits=1)
+    debug(point_idxs)
+    debug(processor.points[point_idxs[0]], processor.points[point_idxs[1]])
+    return processor.points[point_idxs[0]][0] * processor.points[point_idxs[1]][0]
